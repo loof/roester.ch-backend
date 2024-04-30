@@ -1,0 +1,3 @@
+GET http://localhost:8080/coffees
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTM3MzQwNzMsInN1YiI6InJvZXN0ZXJAcm9lc3Rlci5jaCJ9.zHjf6f1cBucDEw3pnnPf9YIKRLkp1r6AGiFzZhzxfzY

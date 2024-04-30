@@ -1,0 +1,2 @@
+GET http://localhost:8080/auth/verify?code=uIlIp0uR8lmPD9HUmXiDVVBG8ALWCiwzUeVVpJxbvr9CkuQAt9CnJpf8yTprcU4r
+Accept: application/json
