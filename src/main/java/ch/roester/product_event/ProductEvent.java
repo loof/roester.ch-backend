@@ -3,6 +3,7 @@ package ch.roester.product_event;
 import ch.roester.event.Event;
 import ch.roester.location.Location;
 import ch.roester.product.Product;
+import ch.roester.product_event_order.ProductEventOrder;
 import ch.roester.unit.Unit;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,7 +20,7 @@ public class ProductEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -33,7 +34,11 @@ public class ProductEvent {
     private Integer amountAvailable;
 
     @ManyToOne
-    private Unit availableAmountUnit;
+    @JoinColumn(name = "amount_available_unit_id")
+    private Unit amountAvailableUnit;
+
+    @OneToMany(mappedBy = "productEvent")
+    private Set<ProductEventOrder> orders;
 }
 
 

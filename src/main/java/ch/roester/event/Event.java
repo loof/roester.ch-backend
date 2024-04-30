@@ -17,20 +17,13 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "description")
     private String description;
-
-    @ManyToMany
-    @JoinTable(
-            name = "product_event",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private Set<Product> products;
 
     @ManyToOne
     @JoinColumn(name = "location_id")

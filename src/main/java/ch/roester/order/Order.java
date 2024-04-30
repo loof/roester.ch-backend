@@ -12,7 +12,7 @@ public abstract class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    protected Long id;
+    protected Integer id;
 
     @ManyToOne
     @JoinColumn(name = "app_user_id")

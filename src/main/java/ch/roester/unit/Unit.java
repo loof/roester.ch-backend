@@ -16,7 +16,7 @@ public class Unit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @OneToMany(mappedBy = "unit")
     private Set<ProductSizePrice> productSizePrices;
