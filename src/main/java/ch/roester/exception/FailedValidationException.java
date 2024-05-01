@@ -1,4 +1,4 @@
-package ch.roester;
+package ch.roester.exception;
 
 import lombok.Getter;
 

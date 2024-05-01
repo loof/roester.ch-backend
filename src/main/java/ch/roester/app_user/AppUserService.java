@@ -1,6 +1,6 @@
 package ch.roester.app_user;
 
-import ch.roester.FailedValidationException;
+import ch.roester.exception.FailedValidationException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;

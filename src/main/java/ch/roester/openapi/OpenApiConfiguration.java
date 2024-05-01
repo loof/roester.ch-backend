@@ -1,4 +1,4 @@
-package ch.roester;
+package ch.roester.openapi;
 
 import ch.roester.security.SecurityConstants;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;

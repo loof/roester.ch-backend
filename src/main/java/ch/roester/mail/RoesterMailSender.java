@@ -1,4 +1,4 @@
-package ch.roester;
+package ch.roester.mail;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;

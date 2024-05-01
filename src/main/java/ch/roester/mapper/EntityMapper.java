@@ -1,4 +1,4 @@
-package ch.roester;
+package ch.roester.mapper;
 
 import java.util.List;
 import java.util.Set;

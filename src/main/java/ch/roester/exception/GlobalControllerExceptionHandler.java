@@ -1,4 +1,4 @@
-package ch.roester;
+package ch.roester.exception;
 
 import org.hibernate.TransientPropertyValueException;
 import org.springframework.core.convert.ConversionFailedException;
