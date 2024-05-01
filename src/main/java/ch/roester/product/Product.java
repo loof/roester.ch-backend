@@ -1,20 +1,15 @@
 package ch.roester.product;
 
-import ch.roester.event.Event;
 import ch.roester.product_event.ProductEvent;
-import ch.roester.product_event_order.ProductEventOrder;
 import ch.roester.product_order.ProductOrder;
 import ch.roester.product_size_price.ProductSizePrice;
 import ch.roester.property.Property;
 import ch.roester.tag.Tag;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -41,7 +36,7 @@ public class Product {
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "product")
-    private Set<ProductOrder> productOrders;
+    private Set<ProductOrder> orders;
 
     @OneToMany(mappedBy = "product")
     private Set<ProductEvent> events;

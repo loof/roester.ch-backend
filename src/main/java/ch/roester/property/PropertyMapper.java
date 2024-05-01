@@ -1,4 +1,4 @@
-package ch.roester.tag;
+package ch.roester.property;
 
 import ch.roester.mapper.EntityMapper;
 import ch.roester.product.Product;
@@ -9,11 +9,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Mapper(componentModel = "spring")
-public interface TagMapper extends EntityMapper<TagRequestDTO, TagResponseDTO, Tag> {
+public interface PropertyMapper extends EntityMapper<PropertyRequestDTO, PropertyResponseDTO, Property> {
 
     @Override
     @Mapping(target = "productIds", source = "products", qualifiedByName = "productsToProductIds")
-    TagResponseDTO toResponseDTO(Tag tag);
+    PropertyResponseDTO toResponseDTO(Property property);
 
     @Named("productsToProductIds")
     default Set<Integer> productsToProductIds(Set<Product> products) {
