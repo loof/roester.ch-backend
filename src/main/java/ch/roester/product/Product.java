@@ -2,7 +2,9 @@ package ch.roester.product;
 
 import ch.roester.event.Event;
 import ch.roester.product_event.ProductEvent;
+import ch.roester.product_event_order.ProductEventOrder;
 import ch.roester.product_order.ProductOrder;
+import ch.roester.product_size_price.ProductSizePrice;
 import ch.roester.property.Property;
 import ch.roester.tag.Tag;
 import jakarta.persistence.*;
@@ -33,15 +35,18 @@ public class Product {
     private String description;
 
     @ManyToMany(mappedBy = "products")
-    private List<Property> properties;
+    private Set<Property> properties;
 
     @ManyToMany(mappedBy = "products")
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "product")
-    private Set<ProductOrder> orders;
+    private Set<ProductOrder> productOrders;
 
     @OneToMany(mappedBy = "product")
     private Set<ProductEvent> events;
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductSizePrice> sizePrices;
 
 }

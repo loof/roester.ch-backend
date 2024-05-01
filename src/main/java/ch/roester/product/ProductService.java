@@ -25,8 +25,8 @@ public class ProductService {
         return repository.findAll();
     }
 
-    public Product save(Product coffee) {
-        return repository.save(coffee);
+    public Product save(Product product) {
+        return repository.save(product);
     }
 
     public void deleteById(Integer id) {
@@ -37,15 +37,15 @@ public class ProductService {
         return repository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public Page<Product> findByCondition(ProductRequestDTO coffeeDto, Pageable pageable) {
+    public Page<Product> findByCondition(ProductRequestDTO requestDTO, Pageable pageable) {
         Page<Product> entityPage = repository.findAll(pageable);
         List<Product> entities = entityPage.getContent();
         return new PageImpl<>(entities, pageable, entityPage.getTotalElements());
     }
 
-    public Product update(Product updatingCoffee, Integer id) {
-        Product existingCoffee = findById(id);
-        BeanUtils.copyProperties(existingCoffee, updatingCoffee);
-        return save(existingCoffee);
+    public Product update(Product updatingProduct, Integer id) {
+        Product existingProduct = findById(id);
+        BeanUtils.copyProperties(existingProduct, updatingProduct);
+        return save(existingProduct);
     }
 }

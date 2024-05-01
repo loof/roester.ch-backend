@@ -35,8 +35,9 @@ public class AppUserService {
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         String randomCode = RandomStringUtils.random(64, true, true);
         appUser.setVerificationCode(randomCode);
-        appUser.setEnabled(false);
-        sendVerificationEmail(appUser);
+        //appUser.setEnabled(false);
+        appUser.setEnabled(true);
+        //sendVerificationEmail(appUser);
         return appUserRepository.save(appUser);
     }
 

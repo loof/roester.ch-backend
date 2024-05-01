@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ProductController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class CoffeeControllerTest {
+class ProductControllerTest {
 
 
     @Autowired
@@ -28,16 +28,16 @@ class CoffeeControllerTest {
     private ProductService coffeeService;
 
     @MockBean
-    private ProductMapper coffeeMapper;
+    private ProductMapper productMapper;
 
 
     @Test
-    public void checkPost_whenValidNewCoffee_thenIsCreated() throws Exception {
+    public void checkPost_whenValidNewProduct_thenIsCreated() throws Exception {
 
         // 1. Mockito Mocking
-        Mockito.when(coffeeService.save(any(Product.class))).thenReturn(TestDataUtil.getTestCoffee());
-        Mockito.when(coffeeMapper.toDto(any(Product.class))).thenReturn(TestDataUtil.getTestCoffeeDTO());
-        Mockito.when(coffeeMapper.toEntity(any(ProductRequestDTO.class))).thenReturn(TestDataUtil.getTestCoffee());
+        Mockito.when(coffeeService.save(any(Product.class))).thenReturn(TestDataUtil.getTestProduct());
+        Mockito.when(productMapper.toResponseDTO(any(Product.class))).thenReturn(TestDataUtil.getTestProductDTO());
+        Mockito.when(productMapper.fromRequestDTO(any(ProductRequestDTO.class))).thenReturn(TestDataUtil.getTestProduct());
 
         mockMvc.perform(post(ProductController.REQUEST_MAPPING)
                         .contentType("application/json")
@@ -51,12 +51,12 @@ class CoffeeControllerTest {
     public void checkPost_whenInvalidICoffee_thenIsBadRequest() throws Exception {
 
         Mockito.when(coffeeService.save(any(Product.class))).thenThrow(DataIntegrityViolationException.class);
-        Mockito.when(coffeeMapper.toDto(any(Product.class))).thenReturn(TestDataUtil.getTestCoffeeDTO());
-        Mockito.when(coffeeMapper.toEntity(any(ProductRequestDTO.class))).thenReturn(TestDataUtil.getTestCoffee());
+        Mockito.when(productMapper.toResponseDTO(any(Product.class))).thenReturn(TestDataUtil.getTestProductDTO());
+        Mockito.when(productMapper.fromRequestDTO(any(ProductRequestDTO.class))).thenReturn(TestDataUtil.getTestProduct());
 
         mockMvc.perform(post(ProductController.REQUEST_MAPPING)
                         .contentType("application/json")
-                        .content("{\"wrongFieldName\":\"Coffee1\"}"))
+                        .content("{\"wrongFieldName\":\"Product\"}"))
 
                 .andExpect(status().isBadRequest());
     }

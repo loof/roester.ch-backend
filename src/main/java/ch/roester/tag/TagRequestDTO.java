@@ -11,7 +11,7 @@ import java.util.List;
 public class TagRequestDTO {
     private Integer id;
     private String name;
-    private List<Integer> coffee_ids;
+
 
     public TagRequestDTO() {
     }

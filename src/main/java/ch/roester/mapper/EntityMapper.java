@@ -3,15 +3,15 @@ package ch.roester.mapper;
 import java.util.List;
 import java.util.Set;
 
-public interface EntityMapper<D, E> {
+public interface EntityMapper<REQ, RES, E> {
 
-    E toEntity(D dto);
+    E fromRequestDTO(REQ dto);
 
-    D toDto(E entity);
+    RES toResponseDTO(E entity);
 
-    List<E> toEntity(List<D> dtoList);
+    List<E> fromRequestDTO(List<REQ> dtoList);
 
-    List<D> toDto(List<E> entityList);
+    List<RES> toResponseDTO(List<E> entityList);
 
-    Set<D> toDto(Set<E> entityList);
+    Set<RES> toResponseDTO(Set<E> entityList);
 }

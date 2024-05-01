@@ -3,6 +3,7 @@ package ch.roester.utils;
 import ch.roester.app_user.AppUser;
 import ch.roester.product.Product;
 import ch.roester.product.ProductRequestDTO;
+import ch.roester.product.ProductResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +34,11 @@ public class TestDataUtil {
         return users;
     }
 
-    public static Product getTestCoffee() {
-        return getTestCoffees().get(0);
+    public static Product getTestProduct() {
+        return getTestProducts().get(0);
     }
 
-    public static List<Product> getTestCoffees() {
+    public static List<Product> getTestProducts() {
         List<Product> coffees = new ArrayList<>();
 
         for (int i = 1; i <= 4; i++) {
@@ -50,21 +51,21 @@ public class TestDataUtil {
         return coffees;
     }
 
-    public static ProductRequestDTO getTestCoffeeDTO() {
-        return getTestCoffeesDTO().get(0);
+    public static ProductResponseDTO getTestProductDTO() {
+        return getTestProductsDTO().get(0);
     }
 
-    public static List<ProductRequestDTO> getTestCoffeesDTO() {
-        List<ProductRequestDTO> coffees = new ArrayList<>();
+    public static List<ProductResponseDTO> getTestProductsDTO() {
+        List<ProductResponseDTO> productResponseDTOs = new ArrayList<>();
 
         for (int i = 1; i <= 4; i++) {
-            ProductRequestDTO coffee = new ProductRequestDTO();
-            coffee.setId(i);
-            coffee.setName("CoffeeDTO" + i);
-            coffees.add(coffee);
+            ProductResponseDTO productResponseDTO = new ProductResponseDTO();
+            productResponseDTO.setId(i);
+            productResponseDTO.setName("CoffeeDTO" + i);
+            productResponseDTOs.add(productResponseDTO);
         }
 
-        return coffees;
+        return productResponseDTOs;
     }
 
 }

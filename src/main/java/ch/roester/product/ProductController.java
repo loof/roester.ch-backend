@@ -15,49 +15,50 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @Slf4j
 public class ProductController {
-    private final ProductService coffeeService;
-    private final ProductMapper coffeeMapper;
 
-    public static final String REQUEST_MAPPING = "/coffees";
+    private final ProductService productService;
+    private final ProductMapper productMapper;
+
+    public static final String REQUEST_MAPPING = "/products";
 
     @Autowired
-    public ProductController(ProductService coffeeService, ProductMapper coffeeMapper) {
-        this.coffeeService = coffeeService;
-        this.coffeeMapper = coffeeMapper;
+    public ProductController(ProductService productService, ProductMapper productMapper) {
+        this.productService = productService;
+        this.productMapper = productMapper;
     }
 
     @PostMapping
-    public ResponseEntity<ProductRequestDTO> save(@RequestBody @Valid ProductRequestDTO coffeeDto) {
+    public ResponseEntity<ProductResponseDTO> save(@RequestBody @Valid ProductRequestDTO productRequestDTO) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(coffeeMapper.toDto(coffeeService.save(coffeeMapper.toEntity(coffeeDto))));
+            return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toResponseDTO(productService.save(productMapper.fromRequestDTO(productRequestDTO))));
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Coffee could not be created");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product could not be created");
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductRequestDTO> findById(@Parameter(description = "Id of coffee to get") @PathVariable("id") Integer id) {
+    public ResponseEntity<ProductResponseDTO> findById(@Parameter(description = "Id of product to get") @PathVariable("id") Integer id) {
         try {
-            Product coffee = coffeeService.findById(id);
-            return ResponseEntity.ok(coffeeMapper.toDto(coffee));
+            Product product = productService.findById(id);
+            return ResponseEntity.ok(productMapper.toResponseDTO(product));
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Coffee not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "Id of item to delete") @PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@Parameter(description = "Id of product to delete") @PathVariable("id") Integer id) {
         try {
-            coffeeService.deleteById(id);
+            productService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Coffee not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
     }
 
     @GetMapping
-    public ResponseEntity<?> findCoffees() {
-        return ResponseEntity.ok(coffeeMapper.toDto(coffeeService.findAll()));
+    public ResponseEntity<?> findProducts() {
+        return ResponseEntity.ok(productMapper.toResponseDTO(productService.findAll()));
     }
 
     /*@GetMapping("/page-query")
@@ -67,14 +68,14 @@ public class ProductController {
     }*/
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductRequestDTO> update(@RequestBody @Valid ProductRequestDTO coffeeDto, @PathVariable("id") Integer id) {
+    public ResponseEntity<ProductRequestDTO> update(@RequestBody @Valid ProductRequestDTO productRequestDTO, @PathVariable("id") Integer id) {
         try {
-            Product updatedCoffee = coffeeService.update(coffeeMapper.toEntity(coffeeDto), id);
-            return ResponseEntity.ok(coffeeMapper.toDto(updatedCoffee));
+            Product updatedProduct = productService.update(productMapper.fromRequestDTO(productRequestDTO), id);
+            return ResponseEntity.ok(productMapper.toResponseDTO(updatedProduct));
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Coffee could not be created");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product could not be created");
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Coffee not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
 
     }

@@ -9,6 +9,7 @@ import lombok.Setter;
 public class ProductRequestDTO {
     private Integer id;
     private String name;
+    private String description;
 
     public ProductRequestDTO() {
     }
