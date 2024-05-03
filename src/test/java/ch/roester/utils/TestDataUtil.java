@@ -44,7 +44,7 @@ public class TestDataUtil {
         for (int i = 1; i <= 4; i++) {
             Product coffee = new Product();
             coffee.setId(i);
-            coffee.setName("Coffee" + i);
+            coffee.setName("Product" + i);
             coffees.add(coffee);
         }
 
@@ -61,7 +61,7 @@ public class TestDataUtil {
         for (int i = 1; i <= 4; i++) {
             ProductResponseDTO productResponseDTO = new ProductResponseDTO();
             productResponseDTO.setId(i);
-            productResponseDTO.setName("CoffeeDTO" + i);
+            productResponseDTO.setName("ProductDTO" + i);
             productResponseDTOs.add(productResponseDTO);
         }
 

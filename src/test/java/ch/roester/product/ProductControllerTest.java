@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
@@ -25,7 +26,7 @@ class ProductControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ProductService coffeeService;
+    private ProductService productService;
 
     @MockBean
     private ProductMapper productMapper;
@@ -35,27 +36,27 @@ class ProductControllerTest {
     public void checkPost_whenValidNewProduct_thenIsCreated() throws Exception {
 
         // 1. Mockito Mocking
-        Mockito.when(coffeeService.save(any(Product.class))).thenReturn(TestDataUtil.getTestProduct());
+        Mockito.when(productService.save(any(Product.class))).thenReturn(TestDataUtil.getTestProduct());
         Mockito.when(productMapper.toResponseDTO(any(Product.class))).thenReturn(TestDataUtil.getTestProductDTO());
         Mockito.when(productMapper.fromRequestDTO(any(ProductRequestDTO.class))).thenReturn(TestDataUtil.getTestProduct());
 
         mockMvc.perform(post(ProductController.REQUEST_MAPPING)
-                        .contentType("application/json")
-                        .content("{\"name\":\"CoffeeDTO1\", \"appUserId\":\"1\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"ProductDTO1\", \"appUserId\":\"1\"}"))
 
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is("CoffeeDTO1")));
+                .andExpect(jsonPath("$.name", is("ProductDTO1")));
     }
 
     @Test
-    public void checkPost_whenInvalidICoffee_thenIsBadRequest() throws Exception {
+    public void checkPost_whenInvalidIProduct_thenIsBadRequest() throws Exception {
 
-        Mockito.when(coffeeService.save(any(Product.class))).thenThrow(DataIntegrityViolationException.class);
+        Mockito.when(productService.save(any(Product.class))).thenThrow(DataIntegrityViolationException.class);
         Mockito.when(productMapper.toResponseDTO(any(Product.class))).thenReturn(TestDataUtil.getTestProductDTO());
         Mockito.when(productMapper.fromRequestDTO(any(ProductRequestDTO.class))).thenReturn(TestDataUtil.getTestProduct());
 
         mockMvc.perform(post(ProductController.REQUEST_MAPPING)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"wrongFieldName\":\"Product\"}"))
 
                 .andExpect(status().isBadRequest());
