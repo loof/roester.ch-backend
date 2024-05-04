@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -36,12 +37,12 @@ public class Product {
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "product")
-    private Set<ProductOrder> orders;
+    private List<ProductOrder> orders;
 
     @OneToMany(mappedBy = "product")
-    private Set<ProductEvent> events;
+    private List<ProductEvent> events;
 
     @OneToMany(mappedBy = "product")
-    private Set<ProductSizePrice> sizePrices;
+    private List<ProductSizePrice> sizePrices;
 
 }

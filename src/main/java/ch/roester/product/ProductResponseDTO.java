@@ -5,14 +5,15 @@ import ch.roester.tag.TagResponseDTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Setter
 @Getter
 public class ProductResponseDTO extends ProductRequestDTO {
-    private Set<Integer> eventIds;
-    private Set<Integer> sizePriceIds;
+    private List<Integer> eventIds;
+    private List<Integer> sizePriceIds;
     private Set<TagResponseDTO> tags;
     private Set<PropertyResponseDTO> properties;
-    private Set<Integer> productOrderIds;
+    private List<Integer> productOrderIds;
 }

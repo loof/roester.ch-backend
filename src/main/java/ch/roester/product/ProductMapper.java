@@ -9,9 +9,15 @@ import ch.roester.tag.TagMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+@Component
 @Mapper(componentModel = "spring", uses = {PropertyMapper.class, TagMapper.class})
 public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductResponseDTO, Product> {
 
@@ -22,8 +28,8 @@ public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductRe
     ProductResponseDTO toResponseDTO(Product product);
 
     @Named("eventsToEventIds")
-    default Set<Integer> eventsToEventIds(Set<ProductEvent> events) {
-        Set<Integer> eventIds = new HashSet<>();
+    default List<Integer> eventsToEventIds(List<ProductEvent> events) {
+        List<Integer> eventIds = new ArrayList<>();
         for (ProductEvent event : events) {
             eventIds.add(event.getId());
         }
@@ -31,8 +37,8 @@ public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductRe
     }
 
     @Named("sizePricesTosizePriceIds")
-    default Set<Integer> sizePricesTosizePriceIds(Set<ProductSizePrice> sizePrices) {
-        Set<Integer> sizePriceIds = new HashSet<>();
+    default List<Integer> sizePricesTosizePriceIds(List<ProductSizePrice> sizePrices) {
+        List<Integer> sizePriceIds = new ArrayList<>();
         for (ProductSizePrice sizePrice : sizePrices) {
             sizePriceIds.add(sizePrice.getId());
         }
@@ -40,8 +46,8 @@ public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductRe
     }
 
     @Named("productOrdersToProductOrderIds")
-    default Set<Integer> productOrdersToProductOrderIds(Set<ProductOrder> productOrders) {
-        Set<Integer> productOrderIds = new HashSet<>();
+    default List<Integer> productOrdersToProductOrderIds(List<ProductOrder> productOrders) {
+        List<Integer> productOrderIds = new ArrayList<>();
         for (ProductOrder productOrder : productOrders) {
             productOrderIds.add(productOrder.getId());
         }

@@ -1,15 +1,26 @@
 package ch.roester.product;
 
+import io.micrometer.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 @RequestMapping(ProductController.REQUEST_MAPPING)
 @RestController
@@ -28,7 +39,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> save(@RequestBody @Valid ProductRequestDTO productRequestDTO) {
+    public ResponseEntity<ProductResponseDTO> create(@RequestBody @Valid ProductRequestDTO productRequestDTO) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(productMapper.toResponseDTO(productService.save(productMapper.fromRequestDTO(productRequestDTO))));
         } catch (DataIntegrityViolationException e) {
@@ -57,8 +68,19 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findProducts() {
-        return ResponseEntity.ok(productMapper.toResponseDTO(productService.findAll()));
+    public ResponseEntity<?> find(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size, @RequestParam(required = false) String name, @RequestParam(required = false) String description, @RequestParam(required = false) String tagNames, @RequestParam(required = false) String priceMin, @RequestParam(required = false) String priceMax) {
+        List<ProductResponseDTO> products;
+        Pageable paging = PageRequest.of(page, size);
+        Page<ProductResponseDTO> productPages = productService.findAll(paging);
+        products = productPages.getContent();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("products", products);
+        response.put("currentPage", productPages.getNumber());
+        response.put("totalItems", productPages.getTotalElements());
+        response.put("totalPages", productPages.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 
     /*@GetMapping("/page-query")
@@ -67,13 +89,13 @@ public class ProductController {
         return ResponseEntity.ok(coffeePage);
     }*/
 
-    @PutMapping("/{id}")
+    @PatchMapping("{id}")
     public ResponseEntity<ProductRequestDTO> update(@RequestBody @Valid ProductRequestDTO productRequestDTO, @PathVariable("id") Integer id) {
         try {
-            Product updatedProduct = productService.update(productMapper.fromRequestDTO(productRequestDTO), id);
+            Product updatedProduct = productService.update(id, productMapper.fromRequestDTO(productRequestDTO));
             return ResponseEntity.ok(productMapper.toResponseDTO(updatedProduct));
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product could not be created");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product could not be updated");
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }

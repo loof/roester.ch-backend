@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -50,6 +51,6 @@ public class Location {
     private Set<AppUser> appUsers = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "location")
-    private Set<Event> events;
+    private List<Event> events;
 
 }
