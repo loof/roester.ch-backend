@@ -1,7 +1,9 @@
-package ch.roester.product;
+package ch.roester.tag;
 
-import ch.roester.tag.Tag;
-import jakarta.validation.constraints.Size;
+import ch.roester.product.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface ProductRepository extends PagingAndSortingRepository<Product, Integer>, JpaRepository<Product, Integer>, JpaSpecificationExecutor<Product> {
-
-    Page<Product> findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description, Pageable pageable);
-    Page<Product> findByTagsIn(Set<Tag> tags, Pageable pageable);
-
-
+public interface TagRepository extends PagingAndSortingRepository<Tag, Integer>, JpaRepository<Tag, Integer>, JpaSpecificationExecutor<Tag> {
+    Set<Tag> findByNameIsIn(List<String> tagNames);
 }

@@ -1,80 +1,70 @@
 package ch.roester.product;
 
 import ch.roester.tag.Tag;
+import ch.roester.tag.TagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
 @Transactional
 public class ProductService {
-    private final ProductRepository repository;
+    private final ProductRepository productRepository;
+    private final TagRepository tagRepository;
     private final ProductMapper productMapper;
 
     @Autowired
-    public ProductService(ProductRepository repository, ProductMapper productMapper) {
+    public ProductService(ProductRepository productRepository, TagRepository tagRepository, ProductMapper productMapper) {
         this.productMapper = productMapper;
-        this.repository = repository;
+        this.productRepository = productRepository;
+        this.tagRepository = tagRepository;
     }
 
     public Page<ProductResponseDTO> findAll(Pageable pageable) {
-        return productMapper.toResponseDTO(repository.findAll(pageable));
+        return productMapper.toResponseDTO(productRepository.findAll(pageable));
     }
 
-    public Page<Product> findAllByNameContaining(String name, Pageable pageable) {
-        return repository.findAllByNameContaining(name, pageable);
+    public Page<ProductResponseDTO> findBySearchQuery(String searchQuery, Pageable pageable) {
+        return productMapper.toResponseDTO(productRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchQuery, searchQuery, pageable));
     }
 
-    public Page<Product> findAllByDescriptionContaining(String description, Pageable pageable) {
-        return repository.findAllByDescriptionContaining(description, pageable);
+    public Page<ProductResponseDTO> findByTags(List<String> tagStrings, Pageable pageable) {
+        Set<Tag> tags = tagRepository.findByNameIsIn(tagStrings);
+        return productMapper.toResponseDTO(productRepository.findByTagsIn(tags, pageable));
     }
 
-    public Page<Product> findAllByTagNamesContainingIgnoreCase(String tagNamesString, Pageable pageable) {
-        String[] tagNames = tagNamesString.split(",");
-        Set<Tag> tags = new HashSet<>();
-        for (String tagName : tagNames) {
-            Tag tag = new Tag();
-            tag.setName(tagName);
-            tags.add(tag);
+   /* public Page<ProductResponseDTO> findBySearchQueryAndTags(String searchQuery, List<String> tagStrings, Pageable pageable) {
+        Set<Tag> tags = tagRepository.findByNameIsIn(tagStrings);
+        return productMapper.toResponseDTO(productRepository.findByTagsInOrNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchQuery, searchQuery, tags, pageable));
+    }*/
+
+    public ProductResponseDTO findById(Integer id) {
+        return productMapper.toResponseDTO(productRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+    }
+
+    public ProductResponseDTO update(Integer id, ProductRequestDTO updatingProduct) {
+        Optional<Product> existingProduct = productRepository.findById(id);
+        if (existingProduct.isEmpty()) {
+            throw new EntityNotFoundException();
         }
-        return repository.findAllByTagsContainingIgnoreCase(tags, pageable);
+        BeanUtils.copyProperties(existingProduct, updatingProduct);
+        return productMapper.toResponseDTO(productRepository.save(existingProduct.get()));
     }
 
-
-
-    public Product save(Product product) {
-        return repository.save(product);
+    public ProductResponseDTO save(ProductRequestDTO product) {
+        return productMapper.toResponseDTO(productRepository.save(productMapper.fromRequestDTO(product)));
     }
 
     public void deleteById(Integer id) {
-        repository.deleteById(id);
-    }
-
-    public Product findById(Integer id) {
-        return repository.findById(id).orElseThrow(EntityNotFoundException::new);
-    }
-
-    public Page<Product> findByCondition(ProductRequestDTO requestDTO, Pageable pageable) {
-        Page<Product> entityPage = repository.findAll(pageable);
-        List<Product> entities = entityPage.getContent();
-        return new PageImpl<>(entities, pageable, entityPage.getTotalElements());
-    }
-
-    public Product update(Integer id, Product updatingProduct) {
-        Product existingProduct = findById(id);
-        BeanUtils.copyProperties(existingProduct, updatingProduct);
-        return save(existingProduct);
+        productRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        productRepository.deleteById(id);
     }
 }

@@ -20,13 +20,8 @@ public interface EntityMapper<REQ, RES, E> {
 
     List<RES> toResponseDTO(List<E> entityList);
 
-    default Page<RES> toResponseDTO(Page<E> entityPage) {
-        return entityPage.map(new Function<E, RES>() {
-            @Override
-            public RES apply(E entity) {
-                return toResponseDTO(entity);
-            }
-        });
+    default Page<RES> toResponseDTO(Page<E> entityPages) {
+        return entityPages.map(entityPage -> toResponseDTO(entityPage));
     }
 
 }
