@@ -15,6 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -74,6 +77,33 @@ class ProductControllerTest {
 
     }
 
+    @Test
+    public void checkGetAll_whenSearchQueryGiven_thenFilteredProductsAreReturned() throws Exception {
+        Mockito.when(productService.findBySearchQuery(eq("Product"), any(Pageable.class))).thenReturn(TestDataUtil.getTestProductsDTO());
 
+        mockMvc.perform(get(ProductController.REQUEST_MAPPING + "?searchQuery=Product"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
 
+    }
+
+    @Test
+    public void checkGetAll_whenTagsGiven_thenFilteredProductsAreReturned() throws Exception {
+        Mockito.when(productService.findByTags(any() , any(Pageable.class))).thenReturn(TestDataUtil.getTestProductsDTO());
+
+        mockMvc.perform(get(ProductController.REQUEST_MAPPING + "?tagNames=tag1,tag2"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
+
+    }
+
+    @Test
+    public void checkGetAll_whensearchQueryAnsTagsGiven_thenFilteredProductsAreReturned() throws Exception {
+        Mockito.when(productService.findBySearchQueryAndTags(any(), any() , any(Pageable.class))).thenReturn(TestDataUtil.getTestProductsDTO());
+
+        mockMvc.perform(get(ProductController.REQUEST_MAPPING + "?tagNames=tag1,tag2&searchQuery=Product"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
+
+    }
 }

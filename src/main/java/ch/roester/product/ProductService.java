@@ -37,7 +37,7 @@ public class ProductService {
         return productMapper.toResponseDTO(productRepository.findAllByTags(tagStrings, pageable));
     }
 
-   public Page<ProductResponseDTO> findBySearchQueryOrTags(String searchQuery, List<String> tagStrings, Pageable pageable) {
+   public Page<ProductResponseDTO> findBySearchQueryAndTags(String searchQuery, List<String> tagStrings, Pageable pageable) {
         return productMapper.toResponseDTO(productRepository.findAllByNameOrDescriptionAndTags(searchQuery, tagStrings, pageable));
     }
 
