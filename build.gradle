@@ -67,7 +67,6 @@ dependencies {
 	//annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen:6.3.1.Final")
 }
 
-
-tasks.named('test') {
+test {
 	useJUnitPlatform()
 }

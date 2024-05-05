@@ -8,14 +8,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 @WebMvcTest(controllers = ProductController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -61,7 +66,12 @@ class ProductControllerTest {
 
     @Test
     public void checkGetAll_whenWithoutParams_thenAllAreReturned() throws Exception {
-        //Mockito.when(productService.findAll())
+        Mockito.when(productService.findAll(any(Pageable.class))).thenReturn(TestDataUtil.getTestProductsDTO());
+
+        mockMvc.perform(get(ProductController.REQUEST_MAPPING))
+                .andExpect(status().isOk())
+                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
+
     }
 
 
