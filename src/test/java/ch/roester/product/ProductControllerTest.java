@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -106,4 +107,19 @@ class ProductControllerTest {
                 .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
 
     }
+
+    @Test
+    public void checkDelete_whenValidId_thenIsNoContent() throws Exception {
+        mockMvc.perform(delete(ProductController.REQUEST_MAPPING + "/" + 1))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void checkDelete_whenInvalidId_thenIsNotFound() throws Exception {
+        Mockito.doThrow(EmptyResultDataAccessException.class).when(productService).deleteById(0);
+
+        mockMvc.perform(delete(ProductController.REQUEST_MAPPING + "/" + 0))
+                .andExpect(status().isNotFound());
+    }
+
 }

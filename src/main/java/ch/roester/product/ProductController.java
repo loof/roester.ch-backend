@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -60,7 +61,7 @@ public class ProductController {
         try {
             productService.deleteById(id);
             return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
     }
@@ -91,11 +92,6 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    /*@GetMapping("/page-query")
-    public ResponseEntity<Page<CoffeeDto>> pageQuery(CoffeeDto coffeeDto, @PageableDefault(sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<CoffeeDto> coffeePage = coffeeService.findByCondition(coffeeDto, pageable);
-        return ResponseEntity.ok(coffeePage);
-    }*/
 
     @PatchMapping("{id}")
     public ResponseEntity<ProductRequestDTO> update(@RequestBody @Valid ProductRequestDTO productRequestDTO, @PathVariable("id") Integer id) {
@@ -109,19 +105,5 @@ public class ProductController {
         }
 
     }
-
-    private Set<Tag> createTagsFromTagNames(String tagNamesString) {
-        String[] tagNames = tagNamesString.split(",");
-        Set<Tag> tags = new HashSet<>();
-        for (String tagName : tagNames) {
-            Tag tag = new Tag();
-            tag.setName(tagName);
-            tags.add(tag);
-        }
-        return tags;
-    }
-
-
-
 
 }
