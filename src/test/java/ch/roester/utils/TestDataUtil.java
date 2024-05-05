@@ -1,24 +1,22 @@
 package ch.roester.utils;
 
 import ch.roester.app_user.AppUser;
+import ch.roester.event.Event;
+import ch.roester.event.EventResponseDTO;
 import ch.roester.product.Product;
-import ch.roester.product.ProductRequestDTO;
 import ch.roester.product.ProductResponseDTO;
-import ch.roester.property.Property;
-import ch.roester.property.PropertyResponseDTO;
-import ch.roester.tag.Tag;
-import ch.roester.tag.TagResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class TestDataUtil {
 
-    public static String JSON_ALL_PRODUCTS_DTOS = "{\"totalItems\":4,\"totalPages\":1,\"currentPage\":0,\"products\":[{\"id\":1,\"name\":\"ProductDTO1\",\"description\":\"DescriptionDTO1\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null},{\"id\":2,\"name\":\"ProductDTO2\",\"description\":\"DescriptionDTO2\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null},{\"id\":3,\"name\":\"ProductDTO3\",\"description\":\"DescriptionDTO3\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null},{\"id\":4,\"name\":\"ProductDTO4\",\"description\":\"DescriptionDTO4\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null}]}";
+    public static String JSON_ALL_PRODUCT_DTOS = "{\"totalItems\":4,\"totalPages\":1,\"currentPage\":0,\"products\":[{\"id\":1,\"name\":\"ProductDTO1\",\"description\":\"DescriptionDTO1\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null},{\"id\":2,\"name\":\"ProductDTO2\",\"description\":\"DescriptionDTO2\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null},{\"id\":3,\"name\":\"ProductDTO3\",\"description\":\"DescriptionDTO3\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null},{\"id\":4,\"name\":\"ProductDTO4\",\"description\":\"DescriptionDTO4\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null}]}";
+    public static String JSON_ALL_EVENTS_DTOS = "{\"totalItems\":4,\"totalPages\":1,\"currentPage\":0,\"events\":[{\"id\":1,\"name\":\"EventDTO1\",\"description\":\"DescriptionDTO1\",\"date\":\"2024-12-24T16:01:00\",\"location\":null,\"productEvents\":null},{\"id\":2,\"name\":\"EventDTO2\",\"description\":\"DescriptionDTO2\",\"date\":\"2024-12-24T16:02:00\",\"location\":null,\"productEvents\":null},{\"id\":3,\"name\":\"EventDTO3\",\"description\":\"DescriptionDTO3\",\"date\":\"2024-12-24T16:03:00\",\"location\":null,\"productEvents\":null},{\"id\":4,\"name\":\"EventDTO4\",\"description\":\"DescriptionDTO4\",\"date\":\"2024-12-24T16:04:00\",\"location\":null,\"productEvents\":null}]}";
+
 
     public static AppUser getTestAppUser() {
         return getTestAppUsers().getContent().get(0);
@@ -78,6 +76,46 @@ public class TestDataUtil {
         }
 
         return new PageImpl<>(productResponseDTOs);
+    }
+
+    public static Event getTestEvent() {
+        return getTestEvents().getContent().get(0);
+    }
+
+    public static Page<Event> getTestEvents() {
+        List<Event> events = new ArrayList<>();
+
+        for (int i = 1; i <= 4; i++) {
+            Event event = new Event();
+            event.setId(i);
+            event.setName("Event" + i);
+            event.setDescription("Description" + i);
+            LocalDateTime date = LocalDateTime.of(2024, 12, 24, 16, i, 0);
+            event.setDate(date);
+            events.add(event);
+        }
+
+        return new PageImpl<>(events);
+    }
+
+    public static EventResponseDTO getTestEventDTO() {
+        return getTestEventsDTO().getContent().get(0);
+    }
+
+    public static Page<EventResponseDTO> getTestEventsDTO() {
+        List<EventResponseDTO> eventResponseDTOS = new ArrayList<>();
+
+        for (int i = 1; i <= 4; i++) {
+            EventResponseDTO eventResponseDTO = new EventResponseDTO();
+            eventResponseDTO.setId(i);
+            eventResponseDTO.setName("EventDTO" + i);
+            eventResponseDTO.setDescription("DescriptionDTO" + i);
+            LocalDateTime date = LocalDateTime.of(2024, 12, 24, 16, i, 0);
+            eventResponseDTO.setDate(date);
+            eventResponseDTOS.add(eventResponseDTO);
+        }
+
+        return new PageImpl<>(eventResponseDTOS);
     }
 
 }

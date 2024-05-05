@@ -18,7 +18,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, I
     Page<Product> findAllByTags(List<String> tags, Pageable pageable);
 
     @Query("select p from Product p " +
-            "where p.name like concat('%', :searchString, '%') " +
+            "where p.name like concat('%', :searchQuery, '%') " +
             "or p.description like concat('%', :searchQuery, '%') ")
     Page<Product> findAllByNameOrDescription(String searchQuery, Pageable pageable);
 

@@ -1,7 +1,6 @@
 package ch.roester.product;
 
 import ch.roester.utils.TestDataUtil;
-import jakarta.activation.MimeType;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,13 +12,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,7 +71,7 @@ class ProductControllerTest {
 
         mockMvc.perform(get(ProductController.REQUEST_MAPPING))
                 .andExpect(status().isOk())
-                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
+                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCT_DTOS));
 
     }
 
@@ -106,7 +101,7 @@ class ProductControllerTest {
 
         mockMvc.perform(get(ProductController.REQUEST_MAPPING + "?searchQuery=Product"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
+                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCT_DTOS));
 
     }
 
@@ -116,7 +111,7 @@ class ProductControllerTest {
 
         mockMvc.perform(get(ProductController.REQUEST_MAPPING + "?tagNames=tag1,tag2"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
+                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCT_DTOS));
 
     }
 
@@ -126,7 +121,7 @@ class ProductControllerTest {
 
         mockMvc.perform(get(ProductController.REQUEST_MAPPING + "?tagNames=tag1,tag2&searchQuery=Product"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
+                .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCT_DTOS));
 
     }
 
