@@ -1,11 +1,16 @@
 package ch.roester.product;
 
-import ch.roester.tag.Tag;
-import io.micrometer.common.util.StringUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,10 +20,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RequestMapping(ProductController.REQUEST_MAPPING)
@@ -56,16 +64,6 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "Id of product to delete") @PathVariable("id") Integer id) {
-        try {
-            productService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
-        }
-    }
-
     @GetMapping
     public ResponseEntity<?> find(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size, @RequestParam(required = false) String searchQuery, @RequestParam(required = false) String tagNames, @RequestParam(defaultValue = "name") String sortBy) {
         Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
@@ -94,7 +92,7 @@ public class ProductController {
 
 
     @PatchMapping("{id}")
-    public ResponseEntity<ProductRequestDTO> update(@RequestBody @Valid ProductRequestDTO productRequestDTO, @PathVariable("id") Integer id) {
+    public ResponseEntity<ProductRequestDTO> update(@Valid @RequestBody ProductRequestDTO productRequestDTO, @PathVariable("id") Integer id) {
         try {
             ProductResponseDTO updatedProduct = productService.update(id, productRequestDTO);
             return ResponseEntity.ok(updatedProduct);
@@ -103,7 +101,16 @@ public class ProductController {
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@Parameter(description = "Id of product to delete") @PathVariable("id") Integer id) {
+        try {
+            productService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import ch.roester.product_size_price.ProductSizePrice;
 import ch.roester.property.Property;
 import ch.roester.tag.Tag;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;

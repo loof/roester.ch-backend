@@ -1,6 +1,7 @@
 package ch.roester.product;
 
 import ch.roester.utils.TestDataUtil;
+import jakarta.activation.MimeType;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -142,5 +143,38 @@ class ProductControllerTest {
         mockMvc.perform(delete(ProductController.REQUEST_MAPPING + "/" + 0))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    public void checkPatch_whenValidProduct_thenIsOk() throws Exception {
+        String newName = "NewProductName";
+
+        ProductResponseDTO expected = TestDataUtil.getTestProductDTO();
+        expected.setName(newName);
+
+        Mockito.when(productService.update(eq(1), any(ProductRequestDTO.class))).thenReturn(expected);
+
+        mockMvc.perform(patch(ProductController.REQUEST_MAPPING + "/" + 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\":1,\"name\":\"NewEventName\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(newName)));
+
+    }
+
+    @Test
+    public void checkPatch_whenInvalidProduct_thenIsBadRequest() throws Exception {
+        String newName = "";
+
+        ProductResponseDTO expected = TestDataUtil.getTestProductDTO();
+        expected.setName(newName);
+
+        mockMvc.perform(patch(ProductController.REQUEST_MAPPING + "/" + 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"\"}"))
+                .andExpect(status().isBadRequest());
+
+    }
+
+
 
 }
