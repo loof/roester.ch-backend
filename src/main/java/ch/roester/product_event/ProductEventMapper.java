@@ -15,7 +15,13 @@ public interface ProductEventMapper extends EntityMapper<ProductEventRequestDTO,
     @Mapping(target = "eventId", source = "event", qualifiedByName = "eventToEventId")
     @Mapping(target = "amountAvailableUnit", source = "amountAvailableUnit", qualifiedByName = "fromEntityUnitToDtoUnit")
     @Mapping(target = "productId", source = "product", qualifiedByName = "fromProductToProductId")
+    @Mapping(target = "amountAvailableUnitId", source = "amountAvailableUnit", qualifiedByName = "fromAmountAvailableUnitToAmountAvailableUnitId")
     ProductEventResponseDTO toResponseDTO(ProductEvent productEvent);
+
+    @Named("fromAmountAvailableUnitToAmountAvailableUnitId")
+    default Integer fromAmountAvailableUnitToAmountAvailableUnitId(Unit unit) {
+        return unit.getId();
+    }
 
     @Named("fromProductToProductId")
     default Integer fromProductToProductId(Product product) {

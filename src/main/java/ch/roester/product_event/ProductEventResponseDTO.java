@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProductEventResponseDTO extends ProductEventRequestDTO {
-    private ProductResponseDTO product;
     private String amountAvailableUnit;
+    private ProductResponseDTO product;
 }

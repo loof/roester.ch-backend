@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -28,6 +29,9 @@ public class Event {
     @ManyToOne(optional = false)
     @JoinColumn(name = "location_id")
     private Location location;
+
+    @Column(name = "date", nullable = false)
+    private LocalDateTime date;
 
     @OneToMany(mappedBy = "event")
     private List<ProductEvent> productEvents;

@@ -29,12 +29,10 @@ public class ProductController {
 
     public static final String REQUEST_MAPPING = "/products";
     private final ProductService productService;
-    private final ProductMapper productMapper;
 
     @Autowired
-    public ProductController(ProductService productService, ProductMapper productMapper) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
-        this.productMapper = productMapper;
     }
 
     @PostMapping
