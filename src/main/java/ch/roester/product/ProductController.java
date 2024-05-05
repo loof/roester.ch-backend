@@ -72,9 +72,9 @@ public class ProductController {
         Pageable paging = PageRequest.of(page, size).withSort(sort);
         Page<ProductResponseDTO> productPages = null;
 
-      /*  if (!StringUtils.isEmpty(searchQuery) && !StringUtils.isEmpty(tagNames)) {
-            productPages = productService.findBySearchQueryAndTags(searchQuery, createTagsFromTagNames(tagNames), paging);
-        } else */
+        if (!StringUtils.isEmpty(searchQuery) && !StringUtils.isEmpty(tagNames)) {
+            productPages = productService.findBySearchQueryOrTags(searchQuery, Arrays.asList(tagNames.split(",")), paging);
+        } else
             if (!StringUtils.isEmpty(searchQuery)) {
             productPages = productService.findBySearchQuery(searchQuery, paging);
         } else if (!StringUtils.isEmpty(tagNames)) {

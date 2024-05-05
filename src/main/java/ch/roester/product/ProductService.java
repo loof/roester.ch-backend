@@ -1,6 +1,5 @@
 package ch.roester.product;
 
-import ch.roester.tag.Tag;
 import ch.roester.tag.TagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -33,18 +32,17 @@ public class ProductService {
     }
 
     public Page<ProductResponseDTO> findBySearchQuery(String searchQuery, Pageable pageable) {
-        return productMapper.toResponseDTO(productRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchQuery, searchQuery, pageable));
+        return productMapper.toResponseDTO(productRepository.findAllByNameOrDescription(searchQuery, pageable));
     }
 
     public Page<ProductResponseDTO> findByTags(List<String> tagStrings, Pageable pageable) {
-        Set<Tag> tags = tagRepository.findByNameIsIn(tagStrings);
-        return productMapper.toResponseDTO(productRepository.findByTagsIn(tags, pageable));
+        //Set<Tag> tags = tagRepository.findByNameIsIn(tagStrings);
+        return productMapper.toResponseDTO(productRepository.findAllByTags(tagStrings, pageable));
     }
 
-   /* public Page<ProductResponseDTO> findBySearchQueryAndTags(String searchQuery, List<String> tagStrings, Pageable pageable) {
-        Set<Tag> tags = tagRepository.findByNameIsIn(tagStrings);
-        return productMapper.toResponseDTO(productRepository.findByTagsInOrNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchQuery, searchQuery, tags, pageable));
-    }*/
+   public Page<ProductResponseDTO> findBySearchQueryOrTags(String searchQuery, List<String> tagStrings, Pageable pageable) {
+        return productMapper.toResponseDTO(productRepository.findAllByNameOrDescriptionAndTags(searchQuery, tagStrings, pageable));
+    }
 
     public ProductResponseDTO findById(Integer id) {
         return productMapper.toResponseDTO(productRepository.findById(id).orElseThrow(EntityNotFoundException::new));

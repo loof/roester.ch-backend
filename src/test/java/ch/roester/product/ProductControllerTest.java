@@ -34,7 +34,7 @@ class ProductControllerTest {
 
     @Test
     public void checkPost_whenValidNewProduct_thenIsCreated() throws Exception {
-        Mockito.when(productService.save(any(Product.class))).thenReturn(TestDataUtil.getTestProduct());
+        Mockito.when(productService.save(any(ProductRequestDTO.class))).thenReturn(TestDataUtil.getTestProductDTO());
         Mockito.when(productMapper.toResponseDTO(any(Product.class))).thenReturn(TestDataUtil.getTestProductDTO());
         Mockito.when(productMapper.fromRequestDTO(any(ProductRequestDTO.class))).thenReturn(TestDataUtil.getTestProduct());
 
@@ -48,7 +48,7 @@ class ProductControllerTest {
 
     @Test
     public void checkPost_whenInvalidIProduct_thenIsBadRequest() throws Exception {
-        Mockito.when(productService.save(any(Product.class))).thenThrow(DataIntegrityViolationException.class);
+        Mockito.when(productService.save(any(ProductRequestDTO.class))).thenThrow(DataIntegrityViolationException.class);
         Mockito.when(productMapper.toResponseDTO(any(Product.class))).thenReturn(TestDataUtil.getTestProductDTO());
         Mockito.when(productMapper.fromRequestDTO(any(ProductRequestDTO.class))).thenReturn(TestDataUtil.getTestProduct());
 
