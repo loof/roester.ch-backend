@@ -1,12 +1,12 @@
 package ch.roester.event;
 
 import ch.roester.location.Location;
-import ch.roester.product.Product;
+import ch.roester.product_event.ProductEvent;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,8 +25,11 @@ public class Event {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "location_id")
     private Location location;
+
+    @OneToMany(mappedBy = "event")
+    private List<ProductEvent> productEvents;
 
 }

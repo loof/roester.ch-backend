@@ -6,7 +6,6 @@ import ch.roester.product_size_price.ProductSizePrice;
 import ch.roester.property.Property;
 import ch.roester.tag.Tag;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,7 +42,7 @@ public class Product {
     private List<ProductOrder> orders;
 
     @OneToMany(mappedBy = "product")
-    private List<ProductEvent> events;
+    private List<ProductEvent> productEvents;
 
     @OneToMany(mappedBy = "product")
     private List<ProductSizePrice> sizePrices;

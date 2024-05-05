@@ -90,7 +90,7 @@ public class AppUserService {
                 + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
                 + "Thank you,<br>"
                 + "röster.ch.";
-        String verifyURL =  "http://localhost:8080/auth/verify?code=" + appUser.getVerificationCode();
+        String verifyURL = "http://localhost:8080/auth/verify?code=" + appUser.getVerificationCode();
         content = content.replace("[[URL]]", verifyURL);
         message.setContent(content, "text/html; charset=utf-8");
 

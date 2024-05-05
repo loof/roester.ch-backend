@@ -10,7 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,7 +38,7 @@ public class ProductService {
         return productMapper.toResponseDTO(productRepository.findAllByTags(tagStrings, pageable));
     }
 
-   public Page<ProductResponseDTO> findBySearchQueryAndTags(String searchQuery, List<String> tagStrings, Pageable pageable) {
+    public Page<ProductResponseDTO> findBySearchQueryAndTags(String searchQuery, List<String> tagStrings, Pageable pageable) {
         return productMapper.toResponseDTO(productRepository.findAllByNameOrDescriptionAndTags(searchQuery, tagStrings, pageable));
     }
 

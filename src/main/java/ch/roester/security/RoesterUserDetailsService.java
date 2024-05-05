@@ -36,5 +36,4 @@ public class RoesterUserDetailsService implements UserDetailsService {
     }
 
 
-
 }

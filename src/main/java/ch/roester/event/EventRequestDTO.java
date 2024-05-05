@@ -1,17 +1,12 @@
-package ch.roester.tag;
+package ch.roester.event;
 
 import lombok.Getter;
 import lombok.Setter;
 
-
-@Setter
 @Getter
-public class TagRequestDTO {
+@Setter
+public class EventRequestDTO {
     private Integer id;
     private String name;
-
-
-    public TagRequestDTO() {
-    }
-
+    private String description;
 }

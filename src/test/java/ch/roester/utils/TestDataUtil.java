@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class TestDataUtil {
 
-    public static String JSON_ALL_PRODUCTS_DTOS = "{\"totalItems\":4,\"totalPages\":1,\"currentPage\":0,\"products\":[{\"id\":1,\"name\":\"ProductDTO1\",\"description\":\"DescriptionDTO1\",\"eventIds\":null,\"sizePriceIds\":null,\"tags\":null,\"properties\":null,\"productOrderIds\":null},{\"id\":2,\"name\":\"ProductDTO2\",\"description\":\"DescriptionDTO2\",\"eventIds\":null,\"sizePriceIds\":null,\"tags\":null,\"properties\":null,\"productOrderIds\":null},{\"id\":3,\"name\":\"ProductDTO3\",\"description\":\"DescriptionDTO3\",\"eventIds\":null,\"sizePriceIds\":null,\"tags\":null,\"properties\":null,\"productOrderIds\":null},{\"id\":4,\"name\":\"ProductDTO4\",\"description\":\"DescriptionDTO4\",\"eventIds\":null,\"sizePriceIds\":null,\"tags\":null,\"properties\":null,\"productOrderIds\":null}]}";
+    public static String JSON_ALL_PRODUCTS_DTOS = "{\"totalItems\":4,\"totalPages\":1,\"currentPage\":0,\"products\":[{\"id\":1,\"name\":\"ProductDTO1\",\"description\":\"DescriptionDTO1\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null},{\"id\":2,\"name\":\"ProductDTO2\",\"description\":\"DescriptionDTO2\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null},{\"id\":3,\"name\":\"ProductDTO3\",\"description\":\"DescriptionDTO3\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null},{\"id\":4,\"name\":\"ProductDTO4\",\"description\":\"DescriptionDTO4\",\"eventIds\":null,\"sizePrices\":null,\"tags\":null,\"properties\":null}]}";
 
     public static AppUser getTestAppUser() {
         return getTestAppUsers().getContent().get(0);

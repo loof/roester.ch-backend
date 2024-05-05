@@ -1,15 +1,13 @@
 package ch.roester.product_event_order;
 
-import ch.roester.app_user.AppUser;
 import ch.roester.order.Order;
-import ch.roester.product.Product;
 import ch.roester.product_event.ProductEvent;
-import ch.roester.product_size_price.ProductSizePrice;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

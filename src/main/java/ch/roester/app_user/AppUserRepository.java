@@ -12,5 +12,5 @@ public interface AppUserRepository extends JpaRepository<AppUser, Integer>, JpaS
     Optional<AppUser> findByEmail(String email);
 
     @Query("SELECT u FROM AppUser u WHERE u.verificationCode = ?1")
-    public AppUser findByVerificationCode(String code);
+    AppUser findByVerificationCode(String code);
 }

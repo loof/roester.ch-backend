@@ -30,5 +30,4 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, I
     Page<Product> findAllByNameOrDescriptionAndTags(String searchQuery, List<String> tags, Pageable pageable);
 
 
-
 }

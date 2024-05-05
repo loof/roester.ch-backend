@@ -9,7 +9,6 @@ import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -29,7 +28,7 @@ public class Tag {
     private String name;
 
     @ManyToMany
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "product_tag",
             joinColumns = @JoinColumn(name = "tag_id"),

@@ -1,12 +1,9 @@
 package ch.roester.mapper;
 
-import ch.qos.logback.core.pattern.Converter;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 public interface EntityMapper<REQ, RES, E> {
 

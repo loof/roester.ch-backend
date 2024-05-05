@@ -1,7 +1,6 @@
 package ch.roester.product_event;
 
 import ch.roester.event.Event;
-import ch.roester.location.Location;
 import ch.roester.product.Product;
 import ch.roester.product_event_order.ProductEventOrder;
 import ch.roester.unit.Unit;
@@ -10,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter

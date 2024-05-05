@@ -1,7 +1,6 @@
 package ch.roester.order;
 
 import ch.roester.app_user.AppUser;
-import ch.roester.product_event.ProductEvent;
 import ch.roester.product_size_price.ProductSizePrice;
 import jakarta.persistence.*;
 import lombok.Getter;

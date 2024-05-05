@@ -10,5 +10,6 @@ public class PropertyRequestDTO {
     private String name;
     private String description;
 
-    public PropertyRequestDTO() {}
+    public PropertyRequestDTO() {
+    }
 }
