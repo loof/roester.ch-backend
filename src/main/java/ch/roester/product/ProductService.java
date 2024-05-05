@@ -17,14 +17,12 @@ import java.util.*;
 @Transactional
 public class ProductService {
     private final ProductRepository productRepository;
-    private final TagRepository tagRepository;
     private final ProductMapper productMapper;
 
     @Autowired
     public ProductService(ProductRepository productRepository, TagRepository tagRepository, ProductMapper productMapper) {
         this.productMapper = productMapper;
         this.productRepository = productRepository;
-        this.tagRepository = tagRepository;
     }
 
     public Page<ProductResponseDTO> findAll(Pageable pageable) {
@@ -36,7 +34,6 @@ public class ProductService {
     }
 
     public Page<ProductResponseDTO> findByTags(List<String> tagStrings, Pageable pageable) {
-        //Set<Tag> tags = tagRepository.findByNameIsIn(tagStrings);
         return productMapper.toResponseDTO(productRepository.findAllByTags(tagStrings, pageable));
     }
 
