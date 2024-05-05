@@ -1,6 +1,7 @@
 package ch.roester.product;
 
 import ch.roester.utils.TestDataUtil;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,26 @@ class ProductControllerTest {
                 .andExpect(content().json(TestDataUtil.JSON_ALL_PRODUCTS_DTOS));
 
     }
+
+    @Test
+    public void checkFindById_whenInvalidId_thenIsNotFound() throws Exception {
+        Mockito.when(productService.findById(eq(0))).thenThrow(EntityNotFoundException.class);
+
+        mockMvc.perform(get(ProductController.REQUEST_MAPPING + "/" + 0))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void checkFindById_whenValidId_thenEventIsReturned() throws Exception {
+        ProductResponseDTO expected = TestDataUtil.getTestProductDTO();
+        Mockito.when(productService.findById(eq(1))).thenReturn(expected);
+
+        mockMvc.perform(get(ProductController.REQUEST_MAPPING + "/" + 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is("ProductDTO1")));
+    }
+
+
 
     @Test
     public void checkGetAll_whenSearchQueryGiven_thenFilteredProductsAreReturned() throws Exception {
