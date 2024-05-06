@@ -2,13 +2,11 @@ package ch.roester.tag;
 
 import ch.roester.product.Product;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
 import java.util.Objects;
 import java.util.Set;
 
@@ -23,17 +21,16 @@ public class Tag {
     private Integer id;
 
     @Size(max = 50)
-    @Column(name = "name", unique = true, length = 50)
-    @NotNull
+    @Column(name = "name", unique = true, length = 50, nullable = false)
     private String name;
 
     @ManyToMany
-    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "product_tag",
             joinColumns = @JoinColumn(name = "tag_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private Set<Product> products;
+
 
     @Override
     public boolean equals(Object o) {
