@@ -14,10 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.is;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -48,7 +48,6 @@ class EventControllerTest {
         mockMvc.perform(post(EventController.REQUEST_MAPPING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"date\":\"2024-12-24T16:01:00\"}"))
-
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.date", is("2024-12-24T16:01:00")));
     }

@@ -1,13 +1,17 @@
 package ch.roester.event;
 
 import ch.roester.location.Location;
-import ch.roester.product_event.ProductEvent;
+import ch.roester.product.Product;
+import ch.roester.variant.Variant;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,7 +24,8 @@ public class Event {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "name")
+    @Size(max = 255)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "description")
@@ -33,7 +38,24 @@ public class Event {
     @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
-    @OneToMany(mappedBy = "event")
-    private List<ProductEvent> productEvents;
+    @ManyToMany
+    @JoinTable(
+            name = "event_product",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<Product> products;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Objects.equals(id, event.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

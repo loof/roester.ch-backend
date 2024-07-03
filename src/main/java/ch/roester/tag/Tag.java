@@ -31,16 +31,16 @@ public class Tag {
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private Set<Product> products;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        return o.hashCode() == this.hashCode();
+        Tag tag = (Tag) o;
+        return Objects.equals(id, tag.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id);
     }
 }

@@ -1,27 +1,22 @@
-package ch.roester.product;
+package ch.roester.variant;
 
-import ch.roester.event.Event;
-import ch.roester.property.Property;
+import ch.roester.product.Product;
 import ch.roester.stock.Stock;
-import ch.roester.tag.Tag;
 import ch.roester.unit.Unit;
-import ch.roester.variant.Variant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "product")
-public class Product {
+@Table(name = "variant")
+public class Variant {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -34,21 +29,22 @@ public class Product {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "products")
-    private Set<Property> properties;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
-    @ManyToMany(mappedBy = "products")
-    private Set<Tag> tags;
+    @Column(name = "amount_of_product_unit")
+    private double amountOfProductUnit;
 
-    @OneToMany(mappedBy = "product")
-    private List<Variant> variants;
-
-    @ManyToMany(mappedBy = "products")
-    private Set<Event> events;
+    @Column(name = "display_amount")
+    private String displayAmount;
 
     @ManyToOne
-    @JoinColumn(name = "sold_unit_id")
-    private Unit soldUnit;
+    @JoinColumn(name = "display_unit_id")
+    private Unit displayUnit;
+
+    @Column(name = "price")
+    private BigDecimal price;
 
     @ManyToOne
     @JoinColumn(name = "stock_id")
@@ -57,22 +53,16 @@ public class Product {
     @Column(name = "amount_in_stock")
     private double amountInStock;
 
-    @Column(name = "price_per_unit")
-    private BigDecimal pricePerUnit;
-
-    @Column(insertable = false)
-    private LocalDateTime createdAt;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return Objects.equals(id, product.id);
+        Variant variant = (Variant) o;
+        return Objects.equals(id, variant.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id);
     }
 }

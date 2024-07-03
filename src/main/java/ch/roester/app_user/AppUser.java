@@ -1,7 +1,6 @@
 package ch.roester.app_user;
 
 import ch.roester.location.Location;
-import ch.roester.product_order.ProductOrder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -31,9 +31,6 @@ public class AppUser {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "appUser")
-    private Set<ProductOrder> orders = new LinkedHashSet<>();
-
     @Column(name = "verification_code", length = 64)
     private String verificationCode;
 
@@ -43,4 +40,16 @@ public class AppUser {
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppUser appUser = (AppUser) o;
+        return Objects.equals(id, appUser.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
