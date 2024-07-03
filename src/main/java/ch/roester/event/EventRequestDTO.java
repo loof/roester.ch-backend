@@ -14,5 +14,8 @@ public class EventRequestDTO {
     private String description;
 
     @NotNull
+    private Long locationId;
+
+    @NotNull
     private LocalDateTime date;
 }
