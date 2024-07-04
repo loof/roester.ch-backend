@@ -1,6 +1,6 @@
 package ch.roester.location;
 
-import ch.roester.event.*;
+import ch.roester.event.EventResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +33,10 @@ public class LocationService {
         return locationMapper.toResponseDTO(locationRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
+    public Page<LocationResponseDTO> findBySearchQuery(String searchQuery, Pageable pageable) {
+        return locationMapper.toResponseDTO(locationRepository.findAllByCityOrStreet(searchQuery, pageable));
+    }
+
     public LocationResponseDTO update(Integer id, LocationRequestDTO updatingLocation) {
         Optional<Location> existingLocation = locationRepository.findById(id);
         if (existingLocation.isEmpty()) {
@@ -42,8 +46,8 @@ public class LocationService {
         return locationMapper.toResponseDTO(locationRepository.save(existingLocation.get()));
     }
 
-    public LocationResponseDTO save(LocationRequestDTO event) {
-        return locationMapper.toResponseDTO(locationRepository.save(locationMapper.fromRequestDTO(event)));
+    public LocationResponseDTO save(LocationRequestDTO location) {
+        return locationMapper.toResponseDTO(locationRepository.save(locationMapper.fromRequestDTO(location)));
     }
 
     public void deleteById(Integer id) {

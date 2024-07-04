@@ -22,9 +22,6 @@ public class Stock {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "amount", nullable = false)
-    private int amount;
-
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;

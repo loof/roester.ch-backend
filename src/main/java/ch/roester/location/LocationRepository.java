@@ -11,4 +11,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LocationRepository extends PagingAndSortingRepository<Location, Integer>, JpaRepository<Location, Integer>, JpaSpecificationExecutor<Location> {
+    @Query("select l from Location l " +
+            "where l.city like concat('%', :searchQuery, '%') " +
+            "or l.street like concat('%', :searchQuery, '%') ")
+    Page<Location> findAllByCityOrStreet(String searchQuery, Pageable pageable);
 }

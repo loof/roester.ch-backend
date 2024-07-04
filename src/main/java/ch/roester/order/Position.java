@@ -21,6 +21,9 @@ public class Position {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @Column(name = "amount")
+    private Integer amount;
+
     @OneToOne(cascade =  CascadeType.ALL)
     @JoinColumn(name = "variant_id", referencedColumnName = "id")
     private Variant variant;

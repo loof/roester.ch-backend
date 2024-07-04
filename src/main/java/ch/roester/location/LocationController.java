@@ -1,8 +1,5 @@
 package ch.roester.location;
 
-import ch.roester.event.EventRequestDTO;
-import ch.roester.event.EventResponseDTO;
-import ch.roester.event.EventService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -30,29 +27,29 @@ import java.util.Map;
 public class LocationController {
 
     public static final String REQUEST_MAPPING = "/locations";
-    private final EventService eventService;
+    private final LocationService locationService;
 
     @Autowired
-    public LocationController(EventService eventService) {
-        this.eventService = eventService;
+    public LocationController(LocationService locationService) {
+        this.locationService = locationService;
     }
 
     @PostMapping
-    public ResponseEntity<EventResponseDTO> create(@RequestBody @Valid EventRequestDTO eventRequestDTO) {
+    public ResponseEntity<LocationResponseDTO> create(@RequestBody @Valid LocationRequestDTO locationRequestDTO) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(eventService.save(eventRequestDTO));
+            return ResponseEntity.status(HttpStatus.CREATED).body(locationService.save(locationRequestDTO));
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event could not be created");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Location could not be created");
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventResponseDTO> findById(@Parameter(description = "Id of event to get") @PathVariable("id") Integer id) {
+    public ResponseEntity<LocationResponseDTO> findById(@Parameter(description = "Id of location to get") @PathVariable("id") Integer id) {
         try {
-            EventResponseDTO product = eventService.findById(id);
-            return ResponseEntity.ok(product);
+            LocationResponseDTO location = locationService.findById(id);
+            return ResponseEntity.ok(location);
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Location not found");
         }
     }
 
@@ -60,43 +57,43 @@ public class LocationController {
     public ResponseEntity<?> find(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size, @RequestParam(required = false) String searchQuery, @RequestParam(defaultValue = "date") String sortBy) {
         Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
         Pageable paging = PageRequest.of(page, size).withSort(sort);
-        Page<EventResponseDTO> eventPages = null;
+        Page<LocationResponseDTO> locationPages = null;
 
        if (!StringUtils.isEmpty(searchQuery)) {
-            eventPages = eventService.findBySearchQuery(searchQuery, paging);
+            locationPages = locationService.findBySearchQuery(searchQuery, paging);
         } else {
-            eventPages = eventService.findAll(paging);
+            locationPages = locationService.findAll(paging);
         }
 
         Map<String, Object> response = new HashMap<>();
-        response.put("events", eventPages.getContent());
-        response.put("currentPage", eventPages.getNumber());
-        response.put("totalItems", eventPages.getTotalElements());
-        response.put("totalPages", eventPages.getTotalPages());
+        response.put("locations", locationPages.getContent());
+        response.put("currentPage", locationPages.getNumber());
+        response.put("totalItems", locationPages.getTotalElements());
+        response.put("totalPages", locationPages.getTotalPages());
 
         return ResponseEntity.ok(response);
     }
 
 
     @PatchMapping("{id}")
-    public ResponseEntity<EventRequestDTO> update(@Valid @RequestBody EventRequestDTO eventRequestDto, @PathVariable("id") Integer id) {
+    public ResponseEntity<LocationRequestDTO> update(@Valid @RequestBody LocationRequestDTO locationRequestDTO, @PathVariable("id") Integer id) {
         try {
-            EventRequestDTO updatedEvent = eventService.update(id, eventRequestDto);
-            return ResponseEntity.ok(updatedEvent);
+            LocationRequestDTO updatedLocation = locationService.update(id, locationRequestDTO);
+            return ResponseEntity.ok(updatedLocation);
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Event could not be updated");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Location could not be updated");
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Location not found");
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "Id of event to delete") @PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@Parameter(description = "Id of location to delete") @PathVariable("id") Integer id) {
         try {
-            eventService.deleteById(id);
+            locationService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (EmptyResultDataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Location not found");
         }
     }
 

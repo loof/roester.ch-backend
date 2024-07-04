@@ -1,6 +1,7 @@
 package ch.roester.product;
 
 import ch.roester.event.Event;
+import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.property.Property;
 import ch.roester.stock.Stock;
 import ch.roester.tag.Tag;
@@ -43,8 +44,8 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<Variant> variants;
 
-    @ManyToMany(mappedBy = "products")
-    private Set<Event> events;
+    @OneToMany(mappedBy = "product")
+    List<EventProductAmount> eventProductAmounts;
 
     @ManyToOne
     @JoinColumn(name = "sold_unit_id")

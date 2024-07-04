@@ -1,5 +1,6 @@
 package ch.roester.event;
 
+import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.location.Location;
 import ch.roester.product.Product;
 import ch.roester.variant.Variant;
@@ -38,13 +39,8 @@ public class Event {
     @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
-    @ManyToMany
-    @JoinTable(
-            name = "event_product",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private Set<Product> products;
+    @OneToMany(mappedBy = "event")
+    List<EventProductAmount> eventProductAmounts;
 
     @Override
     public boolean equals(Object o) {
