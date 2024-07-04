@@ -1,8 +1,5 @@
 package ch.roester.order;
 
-import ch.roester.event.EventRequestDTO;
-import ch.roester.event.EventResponseDTO;
-import ch.roester.event.EventService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -30,73 +27,66 @@ import java.util.Map;
 public class OrderController {
 
     public static final String REQUEST_MAPPING = "/orders";
-    private final EventService eventService;
+    private final OrderService orderService;
 
     @Autowired
-    public OrderController(EventService eventService) {
-        this.eventService = eventService;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
     @PostMapping
-    public ResponseEntity<EventResponseDTO> create(@RequestBody @Valid EventRequestDTO eventRequestDTO) {
+    public ResponseEntity<OrderResponseDTO> create(@RequestBody @Valid OrderRequestDTO orderRequestDTO) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(eventService.save(eventRequestDTO));
+            return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(orderRequestDTO));
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event could not be created");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order could not be created");
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventResponseDTO> findById(@Parameter(description = "Id of event to get") @PathVariable("id") Integer id) {
+    public ResponseEntity<OrderResponseDTO> findById(@Parameter(description = "Id of order to get") @PathVariable("id") Integer id) {
         try {
-            EventResponseDTO product = eventService.findById(id);
-            return ResponseEntity.ok(product);
+            OrderResponseDTO order = orderService.findById(id);
+            return ResponseEntity.ok(order);
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
         }
     }
 
     @GetMapping
-    public ResponseEntity<?> find(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size, @RequestParam(required = false) String searchQuery, @RequestParam(defaultValue = "date") String sortBy) {
-        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
-        Pageable paging = PageRequest.of(page, size).withSort(sort);
-        Page<EventResponseDTO> eventPages = null;
-
-       if (!StringUtils.isEmpty(searchQuery)) {
-            eventPages = eventService.findBySearchQuery(searchQuery, paging);
-        } else {
-            eventPages = eventService.findAll(paging);
-        }
+    public ResponseEntity<?> find(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        Pageable paging = PageRequest.of(page, size);
+        Page<OrderResponseDTO> orderPages = null;
+        orderPages = orderService.findAll(paging);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("events", eventPages.getContent());
-        response.put("currentPage", eventPages.getNumber());
-        response.put("totalItems", eventPages.getTotalElements());
-        response.put("totalPages", eventPages.getTotalPages());
+        response.put("orders", orderPages.getContent());
+        response.put("currentPage", orderPages.getNumber());
+        response.put("totalItems", orderPages.getTotalElements());
+        response.put("totalPages", orderPages.getTotalPages());
 
         return ResponseEntity.ok(response);
     }
 
-
     @PatchMapping("{id}")
-    public ResponseEntity<EventRequestDTO> update(@Valid @RequestBody EventRequestDTO eventRequestDto, @PathVariable("id") Integer id) {
+    public ResponseEntity<OrderRequestDTO> update(@Valid @RequestBody OrderRequestDTO orderRequestDto, @PathVariable("id") Integer id) {
         try {
-            EventRequestDTO updatedEvent = eventService.update(id, eventRequestDto);
-            return ResponseEntity.ok(updatedEvent);
+            OrderRequestDTO updatedOrder = orderService.update(id, orderRequestDto);
+            return ResponseEntity.ok(updatedOrder);
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Event could not be updated");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Order could not be updated");
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "Id of event to delete") @PathVariable("id") Integer id) {
+    public ResponseEntity<Void> delete(@Parameter(description = "Id of order to delete") @PathVariable("id") Integer id) {
         try {
-            eventService.deleteById(id);
+            orderService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (EmptyResultDataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
         }
     }
 

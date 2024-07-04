@@ -16,42 +16,38 @@ import java.util.Optional;
 @Service
 @Transactional
 public class OrderService {
-    private final EventRepository eventRepository;
-    private final EventMapper eventMapper;
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
     @Autowired
-    public OrderService(EventRepository eventRepository, EventMapper eventMapper) {
-        this.eventMapper = eventMapper;
-        this.eventRepository = eventRepository;
+    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper) {
+        this.orderMapper = orderMapper;
+        this.orderRepository = orderRepository;
     }
 
-    public Page<EventResponseDTO> findAll(Pageable pageable) {
-        return eventMapper.toResponseDTO(eventRepository.findAll(pageable));
+    public Page<OrderResponseDTO> findAll(Pageable pageable) {
+        return orderMapper.toResponseDTO(orderRepository.findAll(pageable));
     }
 
-    public Page<EventResponseDTO> findBySearchQuery(String searchQuery, Pageable pageable) {
-        return eventMapper.toResponseDTO(eventRepository.findAllByNameOrDescription(searchQuery, pageable));
+    public OrderResponseDTO findById(Integer id) {
+        return orderMapper.toResponseDTO(orderRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
-    public EventResponseDTO findById(Integer id) {
-        return eventMapper.toResponseDTO(eventRepository.findById(id).orElseThrow(EntityNotFoundException::new));
-    }
-
-    public EventResponseDTO update(Integer id, EventRequestDTO updatingEvent) {
-        Optional<Event> existingEvent = eventRepository.findById(id);
-        if (existingEvent.isEmpty()) {
+    public OrderResponseDTO update(Integer id, OrderRequestDTO updatingOrder) {
+        Optional<Order> existingOrder = orderRepository.findById(id);
+        if (existingOrder.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(existingEvent, updatingEvent);
-        return eventMapper.toResponseDTO(eventRepository.save(existingEvent.get()));
+        BeanUtils.copyProperties(existingOrder, updatingOrder);
+        return orderMapper.toResponseDTO(orderRepository.save(existingOrder.get()));
     }
 
-    public EventResponseDTO save(EventRequestDTO event) {
-        return eventMapper.toResponseDTO(eventRepository.save(eventMapper.fromRequestDTO(event)));
+    public OrderResponseDTO save(OrderRequestDTO order) {
+        return orderMapper.toResponseDTO(orderRepository.save(orderMapper.fromRequestDTO(order)));
     }
 
     public void deleteById(Integer id) {
-        eventRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        eventRepository.deleteById(id);
+        orderRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        orderRepository.deleteById(id);
     }
 }

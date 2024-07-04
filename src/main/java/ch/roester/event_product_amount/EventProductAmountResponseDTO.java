@@ -1,4 +1,4 @@
-package ch.roester.order;
+package ch.roester.event_product_amount;
 
 import ch.roester.event.EventRequestDTO;
 import ch.roester.location.LocationResponseDTO;
@@ -7,6 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OrderResponseDTO extends OrderRequestDTO {
+public class EventProductAmountResponseDTO extends EventProductAmountRequestDTO {
 
 }

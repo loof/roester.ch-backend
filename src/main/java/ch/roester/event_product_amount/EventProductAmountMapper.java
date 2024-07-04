@@ -1,4 +1,4 @@
-package ch.roester.order;
+package ch.roester.event_product_amount;
 
 import ch.roester.event.Event;
 import ch.roester.event.EventRequestDTO;
@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Mapper(componentModel = "spring", uses = {LocationMapper.class})
-public interface OrderMapper extends EntityMapper<OrderRequestDTO, OrderResponseDTO, Order> {
+public interface EventProductAmountMapper extends EntityMapper<EventProductAmountRequestDTO, EventProductAmountResponseDTO, EventProductAmount> {
 
 }
