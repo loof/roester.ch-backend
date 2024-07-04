@@ -1,6 +1,5 @@
 package ch.roester.location;
 
-import ch.roester.event.EventResponseDTO;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
