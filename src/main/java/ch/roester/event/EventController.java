@@ -1,6 +1,5 @@
 package ch.roester.event;
 
-import ch.roester.product.ProductResponseDTO;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
