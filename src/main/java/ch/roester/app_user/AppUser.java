@@ -1,5 +1,6 @@
 package ch.roester.app_user;
 
+import ch.roester.event.Event;
 import ch.roester.location.Location;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -39,6 +40,9 @@ public class AppUser {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
     private Location location;
+
+    @ManyToMany(mappedBy = "appUsers")
+    Set<Event> events;
 
     @Override
     public boolean equals(Object o) {

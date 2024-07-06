@@ -1,5 +1,6 @@
 package ch.roester.event;
 
+import ch.roester.app_user.AppUser;
 import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.location.Location;
 import ch.roester.product.Product;
@@ -41,6 +42,13 @@ public class Event {
 
     @OneToMany(mappedBy = "event")
     List<EventProductAmount> eventProductAmounts;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_app_user",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "app_user_id"))
+    Set<AppUser> appUsers;
 
     @Override
     public boolean equals(Object o) {
