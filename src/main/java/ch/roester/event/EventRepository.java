@@ -14,11 +14,12 @@ import java.util.List;
 @Repository
 public interface EventRepository extends PagingAndSortingRepository<Event, Integer>, JpaRepository<Event, Integer>, JpaSpecificationExecutor<Event> {
 
+    @Override
+    @Query("select e from Event e")
+    Page<Event> findAll(Pageable pageable);
 
     @Query("select e from Event e " +
             "where e.name like concat('%', :searchQuery, '%') " +
             "or e.description like concat('%', :searchQuery, '%') ")
     Page<Event> findAllByNameOrDescription(String searchQuery, Pageable pageable);
-
-
 }

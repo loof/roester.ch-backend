@@ -64,6 +64,9 @@ public class Product {
     @Column(insertable = false)
     private LocalDateTime createdAt;
 
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -25,6 +25,8 @@ public class EventProductAmount {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private double amount;
+    private Double amountLeft;
+
+    private Double amountTotal;
 
 }
