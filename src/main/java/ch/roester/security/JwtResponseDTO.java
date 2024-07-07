@@ -1,6 +1,10 @@
 package ch.roester.security;
 
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public final class JwtResponseDTO {
     private final String accessToken;
     private final String email;
@@ -10,14 +14,6 @@ public final class JwtResponseDTO {
         this.email = email;
     }
 
-    @Override
-    public String toString() {
-        return "JwtResponseDTO[" +
-                "accessToken=" + accessToken + ", " +
-                "email=" + email + ']';
-    }
 
-    public String getAccessToken() {
-        return accessToken;
-    }
+
 }

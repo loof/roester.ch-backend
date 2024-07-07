@@ -13,7 +13,7 @@ public class AuthRequestDTO {
     private String email;
     @Getter
     @NotBlank(message = "password must not be empty")
-    @Size(min = 8, max = 255, message = "password length must be between 8 and 255")
+    @Size(min = 7, max = 255, message = "password length must be between 8 and 255")
     private String password;
 
 
