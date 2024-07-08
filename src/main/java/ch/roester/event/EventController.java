@@ -74,6 +74,11 @@ public class EventController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/next")
+    public ResponseEntity<?> find() {
+        return ResponseEntity.ok(eventService.findNext());
+    }
+
 
     @PatchMapping("{id}")
     public ResponseEntity<EventRequestDTO> update(@Valid @RequestBody EventRequestDTO eventRequestDto, @PathVariable("id") Integer id) {
