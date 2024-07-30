@@ -29,6 +29,9 @@ public class Variant {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "stock_multiplier")
+    private BigDecimal stockMultiplier = new BigDecimal(1);
+
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

@@ -15,7 +15,7 @@ public class VariantRequestDTO {
     private String name;
     private String description;
     private Integer productId;
-    private UnitRequestDTO unit;
+    private UnitResponseDTO displayUnit;
     private BigDecimal price;
 
     public VariantRequestDTO() {
