@@ -22,6 +22,12 @@ public class AppUser {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @Column(name = "firstname", nullable = false)
+    private String firstname;
+
+    @Column(name = "lastname", nullable = false)
+    private String lastname;
+
     @Size(max = 100)
     @NotNull
     @Column(name = "email", nullable = false, length = 100)

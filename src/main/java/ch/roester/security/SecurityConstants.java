@@ -10,6 +10,9 @@ public class SecurityConstants {
     public static final long EXPIRATION_TIME = 864_000_000L; // 10 days
     public static final String AUTH_URLS = "/auth/*";
     public static final String VERIFY_URL = "/auth/verify";
+    public static final String EVENTS_NEXT = "/events/next";
+    public static final String EVENTS_LAST = "/events/last";
+
     public static final String[] API_DOCUMENTATION_URLS = {
             "/v3/api-docs/**",
             "/swagger-ui.html",

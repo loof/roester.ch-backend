@@ -33,12 +33,6 @@ public class Variant {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(name = "amount_of_product_unit")
-    private double amountOfProductUnit;
-
-    @Column(name = "display_amount")
-    private String displayAmount;
-
     @ManyToOne
     @JoinColumn(name = "display_unit_id")
     private Unit displayUnit;

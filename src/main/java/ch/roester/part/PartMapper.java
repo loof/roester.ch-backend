@@ -1,25 +1,19 @@
-package ch.roester.product;
+package ch.roester.part;
 
 import ch.roester.mapper.EntityMapper;
-import ch.roester.part.Part;
-import ch.roester.part.PartMapper;
+import ch.roester.product.Product;
+import ch.roester.product.ProductMapper;
+import ch.roester.product.ProductRequestDTO;
+import ch.roester.product.ProductResponseDTO;
 import ch.roester.property.PropertyMapper;
-import ch.roester.tag.Tag;
 import ch.roester.tag.TagMapper;
-import ch.roester.tag.TagResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 @Component
-@Mapper(componentModel = "spring", uses = {PropertyMapper.class, TagMapper.class, ProductMapper.class, PartMapper.class})
-public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductResponseDTO, Product> {
+@Mapper(componentModel = "spring")
+public interface PartMapper extends EntityMapper<PartRequestDTO, PartResponseDTO, Part> {
 
    /* @Override
     @Mapping(target = "madeOf", source = "madeOf", qualifiedByName = "partsToProducts")

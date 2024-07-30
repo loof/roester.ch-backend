@@ -18,6 +18,15 @@ public class AuthMapper {
         return appUser;
     }
 
+    public static AppUser fromRequestDTO(SignupRequestDTO source) {
+        AppUser appUser = new AppUser();
+        appUser.setEmail(source.getEmail());
+        appUser.setPassword(source.getPassword());
+        appUser.setFirstname(source.getFirstname());
+        appUser.setLastname(source.getLastname());
+        return appUser;
+    }
+
     /**
      * Maps an AppUser object to an AuthDTO object.
      *

@@ -4,6 +4,7 @@ import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.event_product_amount.EventProductAmountMapper;
 import ch.roester.location.LocationMapper;
 import ch.roester.mapper.EntityMapper;
+import ch.roester.product.ProductMapper;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

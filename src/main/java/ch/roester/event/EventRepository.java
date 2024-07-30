@@ -17,4 +17,7 @@ public interface EventRepository extends PagingAndSortingRepository<Event, Integ
 
     @Query("select e from Event e where e.date >= CURRENT_DATE order by e.date asc limit 1")
     Event findNext();
+
+    @Query("select e from Event e where e.date < CURRENT_DATE order by e.date asc limit 1")
+    Event findLast();
 }

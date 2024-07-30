@@ -1,7 +1,7 @@
 package ch.roester.product;
 
-import ch.roester.event.Event;
 import ch.roester.event_product_amount.EventProductAmount;
+import ch.roester.part.Part;
 import ch.roester.property.Property;
 import ch.roester.stock.Stock;
 import ch.roester.tag.Tag;
@@ -32,7 +32,7 @@ public class Product {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @ManyToMany(mappedBy = "products")
@@ -57,6 +57,12 @@ public class Product {
 
     @Column(name = "amount_in_stock")
     private double amountInStock;
+
+    @OneToMany(mappedBy = "product")
+    Set<Part> madeOf;
+
+    @OneToMany(mappedBy = "part")
+    Set<Part> partOf;
 
     @Column(name = "price_per_unit")
     private BigDecimal pricePerUnit;

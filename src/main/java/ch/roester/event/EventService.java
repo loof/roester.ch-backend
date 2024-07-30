@@ -32,6 +32,10 @@ public class EventService {
         return eventMapper.toResponseDTO(eventRepository.findNext());
     }
 
+    public EventResponseDTO findLast() {
+        return eventMapper.toResponseDTO(eventRepository.findLast());
+    }
+
     public Page<EventResponseDTO> findBySearchQuery(String searchQuery, Pageable pageable) {
         return eventMapper.toResponseDTO(eventRepository.findAllByNameOrDescription(searchQuery, pageable));
     }

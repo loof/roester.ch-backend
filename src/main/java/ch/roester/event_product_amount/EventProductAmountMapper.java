@@ -8,6 +8,7 @@ import ch.roester.location.LocationMapper;
 import ch.roester.location.LocationResponseDTO;
 import ch.roester.mapper.EntityMapper;
 import ch.roester.product.Product;
+import ch.roester.product.ProductMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -17,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {ProductMapper.class})
 public interface EventProductAmountMapper extends EntityMapper<EventProductAmountRequestDTO, EventProductAmountResponseDTO, EventProductAmount> {
     @Override
-    @Mapping(target = "product_id", source = "product", qualifiedByName = "productToProductId")
+//    @Mapping(target = "product_id", source = "product", qualifiedByName = "productToProductId")
     @Mapping(target = "event_id", source = "event", qualifiedByName = "eventToEventId")
     EventProductAmountResponseDTO toResponseDTO(EventProductAmount eventProductAmount);
 

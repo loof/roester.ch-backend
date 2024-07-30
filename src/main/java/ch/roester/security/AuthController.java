@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(AuthController.PATH)
@@ -36,12 +38,16 @@ public class AuthController {
     }
 
     @GetMapping("/verify")
-    public String verifyUser(@Param("code") String code) {
+    public ResponseEntity<?> verifyUser(@Param("code") String code) {
+        Map<String, Object> response = new HashMap<>();
         if (appUserService.verify(code)) {
-            return "verify_success";
+            response.put("success", true);
         } else {
-            return "verify_fail";
+            response.put("success", false);
         }
+
+        return ResponseEntity.ok(response);
+
     }
 
     @PostMapping("/signup")
@@ -55,7 +61,7 @@ public class AuthController {
     @SecurityRequirements //no security here, default is BEARER
     public ResponseEntity<?> signUp(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The user to register")
-            @Valid @RequestBody AuthRequestDTO newAuthDTO
+            @Valid @RequestBody SignupRequestDTO newAuthDTO
     ) {
         try {
             AppUser newAuth = AuthMapper.fromRequestDTO(newAuthDTO);
