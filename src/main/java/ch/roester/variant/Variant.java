@@ -45,7 +45,7 @@ public class Variant {
     private Stock stock;
 
     @Column(name = "amount_in_stock")
-    private double amountInStock;
+    private Double amountInStock;
 
     @Override
     public boolean equals(Object o) {

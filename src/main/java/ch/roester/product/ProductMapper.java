@@ -7,6 +7,7 @@ import ch.roester.property.PropertyMapper;
 import ch.roester.tag.Tag;
 import ch.roester.tag.TagMapper;
 import ch.roester.tag.TagResponseDTO;
+import ch.roester.variant.VariantMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-@Mapper(componentModel = "spring", uses = {PropertyMapper.class, TagMapper.class, ProductMapper.class, PartMapper.class})
+@Mapper(componentModel = "spring", uses = {PropertyMapper.class, TagMapper.class, ProductMapper.class, PartMapper.class, VariantMapper.class})
 public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductResponseDTO, Product> {
 
    /* @Override
