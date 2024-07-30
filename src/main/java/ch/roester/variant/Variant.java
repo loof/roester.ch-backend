@@ -29,7 +29,7 @@ public class Variant {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "stock_multiplier")
+    @Column(name = "stock_multiplier", nullable = false)
     private BigDecimal stockMultiplier = new BigDecimal(1);
 
     @ManyToOne
@@ -39,9 +39,6 @@ public class Variant {
     @ManyToOne
     @JoinColumn(name = "display_unit_id")
     private Unit displayUnit;
-
-    @Column(name = "price")
-    private BigDecimal price;
 
     @ManyToOne
     @JoinColumn(name = "stock_id")
