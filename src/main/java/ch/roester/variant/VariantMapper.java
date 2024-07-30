@@ -30,7 +30,6 @@ public interface VariantMapper extends EntityMapper<VariantRequestDTO, VariantRe
 
     @AfterMapping // or @BeforeMapping
     default void calculatePrice(Variant variant, @MappingTarget VariantResponseDTO dto) {
-        Double price = 0d;
         if (variant.getPrice() != null) {
             dto.setPrice(variant.getPrice());
         } else {
