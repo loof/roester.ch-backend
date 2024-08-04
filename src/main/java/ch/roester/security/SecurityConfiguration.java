@@ -49,7 +49,7 @@ public class SecurityConfiguration {
                         authorizeRequest
                                 .requestMatchers(HttpMethod.POST, SecurityConstants.AUTH_URLS).permitAll()
                                 .requestMatchers(HttpMethod.GET, SecurityConstants.API_DOCUMENTATION_URLS).permitAll()
-                                .requestMatchers(HttpMethod.GET, SecurityConstants.VERIFY_URL, SecurityConstants.EVENTS_NEXT, SecurityConstants.EVENTS_LAST).permitAll()
+                                .requestMatchers(HttpMethod.GET, SecurityConstants.VERIFY_URL, SecurityConstants.EVENTS_DETAIL).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()))

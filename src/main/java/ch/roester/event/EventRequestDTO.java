@@ -18,4 +18,7 @@ public class EventRequestDTO {
 
     @NotNull
     private LocalDateTime date;
+
+    @NotNull
+    private Integer daysBeforeSubscriptionCloses;
 }
