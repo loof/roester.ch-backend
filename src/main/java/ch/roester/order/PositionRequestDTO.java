@@ -12,4 +12,5 @@ public class PositionRequestDTO {
     private Integer id;
     private Integer variantId;
     private Integer amount;
+    private Integer eventId;
 }

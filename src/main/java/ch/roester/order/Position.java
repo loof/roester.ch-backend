@@ -1,5 +1,6 @@
 package ch.roester.order;
 
+import ch.roester.event.Event;
 import ch.roester.stock.Stock;
 import ch.roester.variant.Variant;
 import jakarta.persistence.*;
@@ -18,15 +19,23 @@ public class Position {
     protected Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private Integer amount;
 
     @OneToOne(cascade =  CascadeType.ALL)
-    @JoinColumn(name = "variant_id", referencedColumnName = "id")
+    @JoinColumn(name = "variant_id", referencedColumnName = "id", nullable = false)
     private Variant variant;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id", nullable = false)
+    private Status status;
 
     @Override
     public boolean equals(Object o) {
