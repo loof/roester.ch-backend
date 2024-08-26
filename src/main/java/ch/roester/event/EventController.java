@@ -76,7 +76,8 @@ public class EventController {
 
     @GetMapping("/next")
     public ResponseEntity<?> next() {
-        return ResponseEntity.ok(eventService.findNext());
+        EventResponseDTO eventResponseDTO = eventService.findNext();
+        return ResponseEntity.ok(eventResponseDTO == null ? new EventResponseDTO() : eventResponseDTO);
     }
 
     @GetMapping("/last")

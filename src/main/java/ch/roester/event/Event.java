@@ -3,8 +3,6 @@ package ch.roester.event;
 import ch.roester.app_user.AppUser;
 import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.location.Location;
-import ch.roester.product.Product;
-import ch.roester.variant.Variant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -40,8 +38,8 @@ public class Event {
     @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
-    @Column(name = "days_before_subscription_closes", nullable = false)
-    private Integer daysBeforeSubscriptionCloses;
+    @Column(name = "days_before_reservation_closes", nullable = false)
+    private Integer daysBeforeReservationCloses;
 
     @OneToMany(mappedBy = "event")
     List<EventProductAmount> eventProductAmounts;

@@ -15,4 +15,6 @@ public class EventResponseDTO extends EventRequestDTO {
     private LocationResponseDTO location;
     private List<EventProductAmountResponseDTO> eventProductAmounts;
     private Double amountLeft;
+    private Boolean isReservationOpen;
+    private Long daysToEvent;
 }
