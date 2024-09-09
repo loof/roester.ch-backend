@@ -17,4 +17,8 @@ public class EventResponseDTO extends EventRequestDTO {
     private Double amountLeft;
     private Boolean isReservationOpen;
     private Long daysToEvent;
+    private String nextDate;
+    private String prevDate;
+    private Boolean isNext;
+    private Boolean isPrev;
 }

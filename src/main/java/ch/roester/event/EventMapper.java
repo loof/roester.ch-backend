@@ -5,16 +5,16 @@ import ch.roester.event_product_amount.EventProductAmountMapper;
 import ch.roester.location.LocationMapper;
 import ch.roester.mapper.EntityMapper;
 import org.aspectj.lang.annotation.After;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @Mapper(componentModel = "spring", uses = {LocationMapper.class, EventProductAmountMapper.class})
@@ -48,7 +48,6 @@ public interface EventMapper extends EntityMapper<EventRequestDTO, EventResponse
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime eventDate = event.getDate();
         Duration duration = Duration.between(now, eventDate);
-        System.out.println(duration.toDays());
         dto.setDaysToEvent(duration.toDays());
     }
 }

@@ -1,5 +1,6 @@
 package ch.roester.app_user;
 
+import ch.roester.cart.Cart;
 import ch.roester.event.Event;
 import ch.roester.location.Location;
 import jakarta.persistence.*;
@@ -21,6 +22,9 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
+
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
 
     @Column(name = "firstname", nullable = false)
     private String firstname;

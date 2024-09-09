@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 @Repository
 public interface EventRepository extends PagingAndSortingRepository<Event, Integer>, JpaRepository<Event, Integer>, JpaSpecificationExecutor<Event> {
     @Query("select e from Event e " +
@@ -19,5 +21,13 @@ public interface EventRepository extends PagingAndSortingRepository<Event, Integ
     Event findNext();
 
     @Query("select e from Event e where e.date < CURRENT_DATE order by e.date asc limit 1")
-    Event findLast();
+    Event findPrev();
+
+    Event findFirstByDateLessThanOrderByDateDesc(LocalDateTime date);
+
+    Event findFirstByDateGreaterThanOrderByDateAsc(LocalDateTime date);
+
+    Event findByDateBetween(LocalDateTime start, LocalDateTime end);
+
+
 }

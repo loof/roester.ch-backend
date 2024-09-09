@@ -1,5 +1,7 @@
 package ch.roester.app_user;
 
+import ch.roester.cart.Cart;
+import ch.roester.cart.CartRepository;
 import ch.roester.exception.FailedValidationException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -23,12 +25,14 @@ public class AppUserService {
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final CartRepository cartRepository;
 
     @Autowired
-    public AppUserService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender) {
+    public AppUserService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender, CartRepository cartRepository) {
         this.appUserRepository = appUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailSender = mailSender;
+        this.cartRepository = cartRepository;
     }
 
     public AppUser create(AppUser appUser) throws MessagingException, UnsupportedEncodingException {
@@ -36,10 +40,16 @@ public class AppUserService {
         String randomCode = RandomStringUtils.random(64, true, true);
         appUser.setVerificationCode(randomCode);
         appUser.setEnabled(false);
+        Cart cart = new Cart();
+        cart.setUser(appUser);
+        appUser.setCart(cart);
+        cartRepository.save(cart);
         //appUser.setEnabled(true);
         //sendVerificationEmail(appUser);
         return appUserRepository.save(appUser);
     }
+
+    public AppUser findByEmail(String email) {return appUserRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);}
 
     public List<AppUser> findAll() {
         return appUserRepository.findAll();

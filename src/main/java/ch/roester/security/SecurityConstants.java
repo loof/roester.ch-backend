@@ -11,6 +11,7 @@ public class SecurityConstants {
     public static final String AUTH_URLS = "/auth/*";
     public static final String VERIFY_URL = "/auth/verify";
     public static final String EVENTS_DETAIL = "/events/*";
+    public static final String EVENTS_QUERY = "/events*";
 
 
     public static final String[] API_DOCUMENTATION_URLS = {

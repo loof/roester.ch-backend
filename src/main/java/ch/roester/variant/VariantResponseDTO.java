@@ -9,7 +9,5 @@ import java.util.Set;
 @Setter
 @Getter
 public class VariantResponseDTO extends VariantRequestDTO {
-
-
-
+    private String productName;
 }

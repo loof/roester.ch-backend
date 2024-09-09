@@ -17,6 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,13 +47,17 @@ public class EventController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<EventResponseDTO> findById(@Parameter(description = "Id of event to get") @PathVariable("id") Integer id) {
+    @GetMapping("/{date}")
+    public ResponseEntity<EventResponseDTO> findByDate(@Parameter(description = "Id of event to get") @PathVariable("date") String date) {
         try {
-            EventResponseDTO product = eventService.findById(id);
-            return ResponseEntity.ok(product);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDateTime dateTime = LocalDate.parse(date, formatter).atStartOfDay();
+            EventResponseDTO eventDTO = eventService.findFirstByDate(dateTime);
+            return ResponseEntity.ok(eventDTO);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+        } catch (DateTimeParseException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not parse date");
         }
     }
 
@@ -76,13 +84,22 @@ public class EventController {
 
     @GetMapping("/next")
     public ResponseEntity<?> next() {
-        EventResponseDTO eventResponseDTO = eventService.findNext();
-        return ResponseEntity.ok(eventResponseDTO == null ? new EventResponseDTO() : eventResponseDTO);
+        try {
+            EventResponseDTO eventResponseDTO = eventService.findNext();
+            return ResponseEntity.ok(eventResponseDTO);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+        }
     }
 
-    @GetMapping("/last")
-    public ResponseEntity<?> last() {
-        return ResponseEntity.ok(eventService.findLast());
+    @GetMapping("/prev")
+    public ResponseEntity<?> prev() {
+        try {
+            EventResponseDTO eventResponseDTO = eventService.findPrev();
+            return ResponseEntity.ok(eventResponseDTO);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+        }
     }
 
 

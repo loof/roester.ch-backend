@@ -2,6 +2,10 @@ package ch.roester.security;
 
 import ch.roester.app_user.AppUser;
 import ch.roester.app_user.AppUserService;
+import ch.roester.cart.Cart;
+import ch.roester.cart.CartRequestDTO;
+import ch.roester.cart.CartResponseDTO;
+import ch.roester.cart.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,10 +35,12 @@ public class AuthController {
 
     private final AppUserService appUserService;
     private final AuthenticationManager authenticationManager;
+    private final CartService cartService;
 
-    public AuthController(AppUserService appUserService, AuthenticationManager authenticationManager) {
+    public AuthController(AppUserService appUserService, AuthenticationManager authenticationManager, CartService cartService) {
         this.appUserService = appUserService;
         this.authenticationManager = authenticationManager;
+        this.cartService = cartService;
     }
 
     @GetMapping("/verify")
@@ -92,9 +98,10 @@ public class AuthController {
         Authentication token = new UsernamePasswordAuthenticationToken(email, password);
 
         if (authenticationManager.authenticate(token).isAuthenticated()) {
+            AppUser user = appUserService.findByEmail(email);
 
             String jwt = JwtGenerator.generateJwtToken(email);
-            return ResponseEntity.ok(new JwtResponseDTO(jwt, email));
+            return ResponseEntity.ok(new JwtResponseDTO(jwt, email, user.getId(), user.getCart().getId()));
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials!");
         }
