@@ -41,7 +41,7 @@ public class PropertyService {
         if (existingProperty.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(existingProperty, updatingProperty);
+        BeanUtils.copyProperties(updatingProperty, existingProperty);
         return propertyMapper.toResponseDTO(propertyRepository.save(existingProperty.get()));
     }
 

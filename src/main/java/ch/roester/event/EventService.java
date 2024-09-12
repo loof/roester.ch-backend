@@ -76,7 +76,7 @@ public class EventService {
         if (existingEvent.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(existingEvent, updatingEvent);
+        BeanUtils.copyProperties(updatingEvent, existingEvent);
         return eventMapper.toResponseDTO(eventRepository.save(existingEvent.get()));
     }
 

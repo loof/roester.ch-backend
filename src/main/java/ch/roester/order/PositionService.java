@@ -37,7 +37,7 @@ public class PositionService {
         if (existingPosition.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(existingPosition, updatingPosition);
+        BeanUtils.copyProperties(updatingPosition, existingPosition);
         return positionMapper.toResponseDTO(positionRepository.save(existingPosition.get()));
     }
 

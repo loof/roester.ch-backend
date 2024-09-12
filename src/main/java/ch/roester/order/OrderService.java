@@ -38,7 +38,7 @@ public class OrderService {
         if (existingOrder.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(existingOrder, updatingOrder);
+        BeanUtils.copyProperties(updatingOrder, existingOrder);
         return orderMapper.toResponseDTO(orderRepository.save(existingOrder.get()));
     }
 

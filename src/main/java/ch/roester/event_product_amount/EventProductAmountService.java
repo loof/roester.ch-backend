@@ -39,7 +39,7 @@ public class EventProductAmountService {
         if (existingEventProductAmount.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(existingEventProductAmount, updatingEventProductAmount);
+        BeanUtils.copyProperties(updatingEventProductAmount, existingEventProductAmount);
         return eventProductAmountMapper.toResponseDTO(eventProductAmountRepository.save(existingEventProductAmount.get()));
     }
 

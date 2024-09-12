@@ -38,7 +38,7 @@ public class CartService {
         if (existingCart.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(existingCart, updatingCart);
+        BeanUtils.copyProperties(updatingCart, existingCart);
         return cartMapper.toResponseDTO(cartRepository.save(existingCart.get()));
     }
 

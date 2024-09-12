@@ -41,7 +41,7 @@ public class LocationService {
         if (existingLocation.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(existingLocation, updatingLocation);
+        BeanUtils.copyProperties(updatingLocation, existingLocation);
         return locationMapper.toResponseDTO(locationRepository.save(existingLocation.get()));
     }
 

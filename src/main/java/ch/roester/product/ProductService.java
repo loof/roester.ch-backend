@@ -51,7 +51,7 @@ public class ProductService {
         if (existingProduct.isEmpty()) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(existingProduct, updatingProduct);
+        BeanUtils.copyProperties(updatingProduct, existingProduct);
         return productMapper.toResponseDTO(productRepository.save(existingProduct.get()));
     }
 

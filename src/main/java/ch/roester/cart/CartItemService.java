@@ -43,12 +43,9 @@ public class CartItemService {
 
 
     public CartItemResponseDTO update(Integer id, CartItemRequestDTO updatingCartItem) {
-        Optional<CartItem> existingCartItem = cartItemRepository.findById(id);
-        if (existingCartItem.isEmpty()) {
-            throw new EntityNotFoundException();
-        }
-        BeanUtils.copyProperties(existingCartItem, updatingCartItem);
-        return cartItemMapper.toResponseDTO(cartItemRepository.save(existingCartItem.get()));
+        CartItem existingCartItem = cartItemRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        BeanUtils.copyProperties(updatingCartItem, existingCartItem);
+        return cartItemMapper.toResponseDTO(cartItemRepository.save(existingCartItem));
     }
 
     public CartItemResponseDTO save(CartItemRequestDTO cartItemRequestDTO) {

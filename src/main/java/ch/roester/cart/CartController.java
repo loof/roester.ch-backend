@@ -2,6 +2,7 @@ package ch.roester.cart;
 
 import ch.roester.app_user.AppUser;
 import ch.roester.app_user.AppUserService;
+import ch.roester.event.EventRequestDTO;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -67,6 +68,18 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.CREATED).body(cartItemService.save(cartItemRequestDTO));
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart item could not be created");
+        }
+    }
+
+    @PatchMapping("{id}/items")
+    public ResponseEntity<CartItemRequestDTO> update(@Valid @RequestBody CartItemRequestDTO cartItemRequestDTO, @PathVariable("id") Integer id) {
+        try {
+            CartItemRequestDTO updatedCartItem = cartItemService.update(id, cartItemRequestDTO);
+            return ResponseEntity.ok(updatedCartItem);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cart item could not be updated");
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart item not found");
         }
     }
 
