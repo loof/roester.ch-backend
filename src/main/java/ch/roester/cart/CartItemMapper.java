@@ -23,6 +23,39 @@ public interface CartItemMapper extends EntityMapper<CartItemRequestDTO, CartIte
     @Mapping(target = "cartId", source = "cart", qualifiedByName = "cartToCartId")
     CartItemResponseDTO toResponseDTO(CartItem cart);
 
+    @Override
+    @Mapping(target = "event", source = "eventId", qualifiedByName = "eventIdToEvent")
+    @Mapping(target = "variant", source = "variantId", qualifiedByName = "variantIdToVariant")
+    @Mapping(target = "cart", source = "cartId", qualifiedByName = "cartIdToCart")
+    CartItem fromRequestDTO(CartItemRequestDTO dto);
+
+    @Named("eventIdToEvent")
+    default Event eventIdToEvent(Integer eventId) {
+        Event event = new Event();
+        if (eventId != null) {
+            event.setId(eventId);
+        }
+        return event;
+    }
+
+    @Named("variantIdToVariant")
+    default Variant variantIdToVariant(Integer variantId) {
+        Variant variant = new Variant();
+        if (variantId != null) {
+            variant.setId(variantId);
+        }
+        return variant;
+    }
+
+    @Named("cartIdToCart")
+    default Cart cartIdToCart(Integer cartId) {
+        Cart cart = new Cart();
+        if (cartId != null) {
+            cart.setId(cartId);
+        }
+        return cart;
+    }
+
     @Named("eventToEventId")
     default Integer eventToEventId(Event event) {
         return event.getId();

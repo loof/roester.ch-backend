@@ -26,11 +26,13 @@ public class CartController {
 
     public static final String REQUEST_MAPPING = "/carts";
     private final CartService cartService;
+    private final CartItemService cartItemService;
     private final AppUserService appUserService;
 
     @Autowired
-    public CartController(CartService cartService, AppUserService appUserService) {
+    public CartController(CartService cartService, AppUserService appUserService, CartItemService cartItemService) {
         this.cartService = cartService;
+        this.cartItemService = cartItemService;
         this.appUserService = appUserService;
     }
 
@@ -51,11 +53,20 @@ public class CartController {
     }
 
     @PostMapping
-    public ResponseEntity<CartResponseDTO> create(@RequestBody @Valid CartRequestDTO cartRequestDTO) {
+    public ResponseEntity<CartResponseDTO> createCart(@RequestBody @Valid CartRequestDTO cartRequestDTO) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(cartService.save(cartRequestDTO));
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart could not be created");
+        }
+    }
+
+    @PostMapping("{id}/items")
+    public ResponseEntity<CartItemResponseDTO> createCartItem(@RequestBody @Valid CartItemRequestDTO cartItemRequestDTO) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(cartItemService.save(cartItemRequestDTO));
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart item could not be created");
         }
     }
 

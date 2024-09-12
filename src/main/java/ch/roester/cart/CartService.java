@@ -29,7 +29,6 @@ public class CartService {
 
     public CartResponseDTO findById(Integer id) {
         Cart cart = cartRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        CartResponseDTO responseDTO = cartMapper.toResponseDTO(cart);
         return cartMapper.toResponseDTO(cart);
     }
 
