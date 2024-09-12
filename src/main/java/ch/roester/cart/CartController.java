@@ -97,12 +97,22 @@ public class CartController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@Parameter(description = "Id of cart to delete") @PathVariable("id") Integer id) {
+    public ResponseEntity<Void> deleteCart(@Parameter(description = "Id of cart to delete") @PathVariable("id") Integer id) {
         try {
             cartService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found");
+        }
+    }
+
+    @DeleteMapping("/{id}/items")
+    public ResponseEntity<Void> deleteCartItem(@Parameter(description = "Id of cart item to delete") @PathVariable("id") Integer id) {
+        try {
+            cartItemService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart item not found");
         }
     }
 

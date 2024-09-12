@@ -73,8 +73,11 @@ public class CartItemService {
         return cartItemMapper.toResponseDTO(cartItemRepository.save(cartItem));
     }
 
+    @Transactional
     public void deleteById(Integer id) {
-        cartItemRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        CartItem cartItem = cartItemRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        cartItem.getCart().setTotal(cartItem.getCart().getTotal().subtract(cartItem.getVariant().getStockMultiplier().multiply(cartItem.getVariant().getProduct().getPricePerUnit()).multiply(BigDecimal.valueOf(cartItem.getAmount()))));
+        cartItemRepository.delete(cartItem);
         cartItemRepository.deleteById(id);
     }
 

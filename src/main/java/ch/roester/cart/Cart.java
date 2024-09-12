@@ -3,6 +3,7 @@ import ch.roester.app_user.AppUser;
 import ch.roester.product.Product;
 import ch.roester.unit.Unit;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,6 +29,7 @@ public class Cart {
     private Set<CartItem> items;
 
     @Column(name = "total")
+    @Min(0)
     private BigDecimal total;
 
     @Override

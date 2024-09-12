@@ -1,9 +1,9 @@
 package ch.roester.order;
 
 import ch.roester.event.Event;
-import ch.roester.stock.Stock;
 import ch.roester.variant.Variant;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +23,7 @@ public class Position {
     private Order order;
 
     @Column(name = "amount", nullable = false)
+    @Min(0)
     private Integer amount;
 
     @OneToOne(cascade =  CascadeType.ALL)
