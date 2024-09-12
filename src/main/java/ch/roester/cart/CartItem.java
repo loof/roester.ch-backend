@@ -12,7 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "cart_item")
+@Table(name = "cart_item", uniqueConstraints = { @UniqueConstraint(columnNames = { "cart_id", "event_id", "variant_id" }) })
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +23,8 @@ public class CartItem {
     @JoinColumn(name="cart_id", nullable=false)
     private Cart cart;
 
-    @OneToOne(cascade =  CascadeType.ALL)
-    @JoinColumn(name = "variant_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(cascade =  CascadeType.ALL)
+    @JoinColumn(name = "variant_id", nullable = false)
     private Variant variant;
 
     @ManyToOne
