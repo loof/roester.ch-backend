@@ -38,8 +38,8 @@ public class Event {
     @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
-    @Column(name = "days_before_reservation_closes", nullable = false)
-    private Integer daysBeforeReservationCloses;
+    @Column(name = "days_before_subscription_closes", nullable = false)
+    private Integer daysBeforeSubscriptionCloses;
 
     @OneToMany(mappedBy = "event")
     List<EventProductAmount> eventProductAmounts;

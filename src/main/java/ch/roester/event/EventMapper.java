@@ -4,17 +4,11 @@ import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.event_product_amount.EventProductAmountMapper;
 import ch.roester.location.LocationMapper;
 import ch.roester.mapper.EntityMapper;
-import org.aspectj.lang.annotation.After;
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 @Mapper(componentModel = "spring", uses = {LocationMapper.class, EventProductAmountMapper.class})
@@ -38,7 +32,7 @@ public interface EventMapper extends EntityMapper<EventRequestDTO, EventResponse
     default void isReservationOpen(Event event, @MappingTarget EventResponseDTO dto) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime eventDate = event.getDate();
-        LocalDateTime reservationEndDate = eventDate.minusDays(event.getDaysBeforeReservationCloses());
+        LocalDateTime reservationEndDate = eventDate.minusDays(event.getDaysBeforeSubscriptionCloses());
         Duration duration = Duration.between(now, reservationEndDate);
         dto.setIsReservationOpen(duration.toDays() > 0);
     }
