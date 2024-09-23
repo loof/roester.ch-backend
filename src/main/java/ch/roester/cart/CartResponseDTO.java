@@ -13,4 +13,6 @@ import java.util.List;
 public class CartResponseDTO extends CartRequestDTO {
     private List<CartItemResponseDTO> items;
     private Integer userId;
+
+
 }

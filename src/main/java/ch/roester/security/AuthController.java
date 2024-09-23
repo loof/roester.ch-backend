@@ -35,12 +35,10 @@ public class AuthController {
 
     private final AppUserService appUserService;
     private final AuthenticationManager authenticationManager;
-    private final CartService cartService;
 
     public AuthController(AppUserService appUserService, AuthenticationManager authenticationManager, CartService cartService) {
         this.appUserService = appUserService;
         this.authenticationManager = authenticationManager;
-        this.cartService = cartService;
     }
 
     @GetMapping("/verify")

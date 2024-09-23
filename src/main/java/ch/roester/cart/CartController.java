@@ -2,7 +2,6 @@ package ch.roester.cart;
 
 import ch.roester.app_user.AppUser;
 import ch.roester.app_user.AppUserService;
-import ch.roester.event.EventRequestDTO;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -63,18 +62,19 @@ public class CartController {
     }
 
     @PostMapping("{id}/items")
-    public ResponseEntity<CartItemResponseDTO> createCartItem(@RequestBody @Valid CartItemRequestDTO cartItemRequestDTO) {
+    public ResponseEntity<CartItemResponseDTO[]> createCartItems(@RequestBody @Valid CartItemRequestDTO[] cartItemRequestDTOS, @PathVariable("id") Integer cartId) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(cartItemService.save(cartItemRequestDTO));
+            CartItemResponseDTO[] savedCartItems = cartItemService.saveAll(cartId, cartItemRequestDTOS);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedCartItems);
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart item could not be created");
         }
     }
 
-    @PatchMapping("{id}/items")
-    public ResponseEntity<CartItemRequestDTO> update(@Valid @RequestBody CartItemRequestDTO cartItemRequestDTO, @PathVariable("id") Integer id) {
+    @PatchMapping("{cartId}/items/{itemId}")
+    public ResponseEntity<CartItemRequestDTO> update(@Valid @RequestBody CartItemRequestDTO cartItemRequestDTO, @PathVariable("cartId") Integer cartId, @PathVariable("itemId") Integer itemId) {
         try {
-            CartItemRequestDTO updatedCartItem = cartItemService.update(id, cartItemRequestDTO);
+            CartItemRequestDTO updatedCartItem = cartItemService.update(itemId, cartId, cartItemRequestDTO);
             return ResponseEntity.ok(updatedCartItem);
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cart item could not be updated");

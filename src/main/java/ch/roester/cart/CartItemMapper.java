@@ -26,7 +26,6 @@ public interface CartItemMapper extends EntityMapper<CartItemRequestDTO, CartIte
     @Override
     @Mapping(target = "event", source = "eventId", qualifiedByName = "eventIdToEvent")
     @Mapping(target = "variant", source = "variantId", qualifiedByName = "variantIdToVariant")
-    @Mapping(target = "cart", source = "cartId", qualifiedByName = "cartIdToCart")
     CartItem fromRequestDTO(CartItemRequestDTO dto);
 
     @Named("eventIdToEvent")
