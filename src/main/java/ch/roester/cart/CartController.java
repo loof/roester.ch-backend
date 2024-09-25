@@ -62,10 +62,15 @@ public class CartController {
     }
 
     @PostMapping("{id}/items")
-    public ResponseEntity<CartItemResponseDTO[]> createCartItems(@RequestBody @Valid CartItemRequestDTO[] cartItemRequestDTOS, @PathVariable("id") Integer cartId) {
+    public ResponseEntity<CartResponseDTO> createCartItems(@RequestBody @Valid CartItemRequestDTO[] cartItemRequestDTOS, @PathVariable("id") Integer cartId) {
         try {
             CartItemResponseDTO[] savedCartItems = cartItemService.saveAll(cartId, cartItemRequestDTOS);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedCartItems);
+            if (savedCartItems.length > 0) {
+                CartResponseDTO cartResponseDTO = cartService.findById(cartId);
+                return ResponseEntity.status(HttpStatus.CREATED).body(cartResponseDTO);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart items could not be created");
+            }
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart item could not be created");
         }
@@ -85,9 +90,9 @@ public class CartController {
 
 
     @PatchMapping("{id}")
-    public ResponseEntity<CartRequestDTO> update(@Valid @RequestBody CartRequestDTO cartRequestDTO, @PathVariable("id") Integer id) {
+    public ResponseEntity<CartResponseDTO> update(@Valid @RequestBody CartRequestDTO cartRequestDTO, @PathVariable("id") Integer id) {
         try {
-            CartRequestDTO updatedCart = cartService.update(id, cartRequestDTO);
+            CartResponseDTO updatedCart = cartService.update(id, cartRequestDTO);
             return ResponseEntity.ok(updatedCart);
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cart could not be updated");
