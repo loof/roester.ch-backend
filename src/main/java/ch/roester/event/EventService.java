@@ -81,7 +81,8 @@ public class EventService {
     }
 
     public EventResponseDTO save(EventRequestDTO event) {
-        return eventMapper.toResponseDTO(eventRepository.save(eventMapper.fromRequestDTO(event)));
+        Event eventToSave = eventMapper.fromRequestDTO(event);
+        return eventMapper.toResponseDTO(eventRepository.save(eventToSave));
     }
 
     public void deleteById(Integer id) {

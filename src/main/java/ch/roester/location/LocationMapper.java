@@ -20,6 +20,9 @@ public interface LocationMapper extends EntityMapper<LocationRequestDTO, Locatio
     @Named("eventsToEventIds")
     default List<Integer> eventsToEventIds(List<Event> events) {
         List<Integer> eventIds = new ArrayList<>();
+        if (events == null) {
+            return eventIds;
+        }
         for (Event event : events) {
             if (event.getId() != null) {
                 eventIds.add(event.getId());
