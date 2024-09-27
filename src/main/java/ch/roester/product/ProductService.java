@@ -46,13 +46,26 @@ public class ProductService {
         return productMapper.toResponseDTO(productRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
-    public ProductResponseDTO update(Integer id, ProductRequestDTO updatingProduct) {
-        Optional<Product> existingProduct = productRepository.findById(id);
-        if (existingProduct.isEmpty()) {
+    public ProductResponseDTO update(Integer id, ProductRequestDTO updatingProductDTO) {
+        Product existingProduct = productRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        updatingProductDTO.setId(id);
+
+        if (existingProduct == null) {
             throw new EntityNotFoundException();
         }
-        BeanUtils.copyProperties(updatingProduct, existingProduct);
-        return productMapper.toResponseDTO(productRepository.save(existingProduct.get()));
+
+        Product updatingProductEntity = productMapper.fromRequestDTO(updatingProductDTO);
+
+        if (updatingProductDTO.getName() == null) {
+            updatingProductDTO.setName(existingProduct.getName());
+        }
+
+        if (updatingProductDTO.getDescription() == null) {
+            updatingProductDTO.setDescription(existingProduct.getDescription());
+        }
+
+        BeanUtils.copyProperties(productMapper.fromRequestDTO(updatingProductDTO), existingProduct);
+        return productMapper.toResponseDTO(productRepository.save(existingProduct));
     }
 
     public ProductResponseDTO save(ProductRequestDTO product) {

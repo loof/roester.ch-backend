@@ -1,8 +1,11 @@
 package ch.roester.product;
 
+import ch.roester.unit.UnitResponseDTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 
 @Setter
@@ -13,6 +16,8 @@ public class ProductRequestDTO {
     @NotBlank(message = "product name is required and can't be empty")
     private String name;
     private String description;
+    private BigDecimal pricePerUnit;
+    private Integer soldUnitId;
 
     public ProductRequestDTO() {
     }

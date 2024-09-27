@@ -15,7 +15,6 @@ public class SecurityConstants {
     public static final String VARIANTS_QUERY = "/variants*";
     public static final String VARIANTS_DETAIL = "/variants/*";
 
-
     public static final String[] API_DOCUMENTATION_URLS = {
             "/v3/api-docs/**",
             "/swagger-ui.html",

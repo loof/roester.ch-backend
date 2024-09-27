@@ -15,8 +15,9 @@ public class VariantRequestDTO {
     private String name;
     private String description;
     private Integer productId;
-    private UnitResponseDTO displayUnit;
+    private Integer displayUnitId;
     private BigDecimal price;
+    private BigDecimal stockMultiplier;
 
     public VariantRequestDTO() {
     }

@@ -81,7 +81,7 @@ public class ProductController {
 
 
     @PatchMapping("{id}")
-    public ResponseEntity<ProductRequestDTO> update(@Valid @RequestBody ProductRequestDTO productRequestDTO, @PathVariable("id") Integer id) {
+    public ResponseEntity<ProductRequestDTO> update(@RequestBody ProductRequestDTO productRequestDTO, @PathVariable("id") Integer id) {
         try {
             ProductResponseDTO updatedProduct = productService.update(id, productRequestDTO);
             return ResponseEntity.ok(updatedProduct);

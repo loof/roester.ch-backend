@@ -7,6 +7,7 @@ import ch.roester.property.PropertyMapper;
 import ch.roester.tag.Tag;
 import ch.roester.tag.TagMapper;
 import ch.roester.tag.TagResponseDTO;
+import ch.roester.unit.Unit;
 import ch.roester.unit.UnitMapper;
 import ch.roester.variant.VariantMapper;
 import org.mapstruct.Mapper;
@@ -23,4 +24,14 @@ import java.util.Set;
 @Mapper(componentModel = "spring", uses = {PropertyMapper.class, TagMapper.class, ProductMapper.class, PartMapper.class, VariantMapper.class, UnitMapper.class})
 public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductResponseDTO, Product> {
 
+    @Override
+    @Mapping(source = "soldUnitId", target = "soldUnit", qualifiedByName = "soldUnitIdToSoldUnit")
+    Product fromRequestDTO(ProductRequestDTO dto);
+
+    @Named("soldUnitIdToSoldUnit")
+    default Unit soldUnitIdToSoldUnit(Integer unitId) {
+        Unit unit = new Unit();
+        unit.setId(unitId);
+        return unit;
+    }
 }
