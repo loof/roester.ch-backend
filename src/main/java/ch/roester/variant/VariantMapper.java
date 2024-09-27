@@ -18,7 +18,15 @@ public interface VariantMapper extends EntityMapper<VariantRequestDTO, VariantRe
 
     @Override
     @Mapping(target = "displayUnit", source = "displayUnitId", qualifiedByName = "displayUnitIdToDisplayUnit")
+    @Mapping(target = "product", source = "productId", qualifiedByName = "productIdToProduct")
     Variant fromRequestDTO(VariantRequestDTO dto);
+
+    @Named("productIdToProduct")
+    default Product productIdToProduct(Integer productId) {
+        Product product = new Product();
+        product.setId(productId);
+        return product;
+    }
 
     @Named("displayUnitIdToDisplayUnit")
     default Unit displayUnitIdToDisplayUnit(Integer displayUnitId) {
@@ -39,7 +47,9 @@ public interface VariantMapper extends EntityMapper<VariantRequestDTO, VariantRe
 
     @AfterMapping
     default void calculatePrice(Variant variant, @MappingTarget VariantResponseDTO dto) {
-        dto.setPrice(variant.getProduct().getPricePerUnit().multiply(variant.getStockMultiplier()));
+        if (variant.getProduct().getPricePerUnit() != null) {
+            dto.setPrice(variant.getProduct().getPricePerUnit().multiply(variant.getStockMultiplier()));
+        }
     }
 
 }
