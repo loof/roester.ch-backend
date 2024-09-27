@@ -7,8 +7,8 @@ import lombok.Setter;
 @Setter
 public class EventProductAmountRequestDTO {
     private Integer id;
-    private Integer event_id;
-    private Integer product_id;
+    private Integer eventId;
+    private Integer productId;
     private Double amountLeft;
     private Double amountTotal;
 }

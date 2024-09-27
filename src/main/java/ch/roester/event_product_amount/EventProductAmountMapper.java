@@ -21,9 +21,27 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {ProductMapper.class})
 public interface EventProductAmountMapper extends EntityMapper<EventProductAmountRequestDTO, EventProductAmountResponseDTO, EventProductAmount> {
     @Override
-//    @Mapping(target = "product_id", source = "product", qualifiedByName = "productToProductId")
-    @Mapping(target = "event_id", source = "event", qualifiedByName = "eventToEventId")
+    @Mapping(target = "eventId", source = "event", qualifiedByName = "eventToEventId")
     EventProductAmountResponseDTO toResponseDTO(EventProductAmount eventProductAmount);
+
+    @Override
+    @Mapping(target = "event", source = "eventId", qualifiedByName = "eventIdToEvent")
+    @Mapping(target = "product", source = "productId", qualifiedByName = "productIdToProduct")
+    EventProductAmount fromRequestDTO(EventProductAmountRequestDTO dto);
+
+    @Named("eventIdToEvent")
+    default Event eventIdToEvent(Integer eventId) {
+        Event event = new Event();
+        event.setId(eventId);
+        return event;
+    }
+
+    @Named("productIdToProduct")
+    default Product productIdToProduct(Integer productId) {
+        Product product = new Product();
+        product.setId(productId);
+        return product;
+    }
 
     @Named("productToProductId")
     default Integer productToProductId(Product product) {
