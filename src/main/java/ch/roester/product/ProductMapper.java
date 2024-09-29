@@ -30,8 +30,11 @@ public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductRe
 
     @Named("soldUnitIdToSoldUnit")
     default Unit soldUnitIdToSoldUnit(Integer unitId) {
-        Unit unit = new Unit();
-        unit.setId(unitId);
-        return unit;
+        if (unitId != null) {
+            Unit unit = new Unit();
+            unit.setId(unitId);
+            return unit;
+        }
+        return null;
     }
 }

@@ -32,7 +32,7 @@ public class Product {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
     @ManyToMany(mappedBy = "products")
@@ -56,7 +56,7 @@ public class Product {
     private Stock stock;
 
     @Column(name = "amount_in_stock")
-    private double amountInStock;
+    private Double amountInStock;
 
     @OneToMany(mappedBy = "product")
     Set<Part> madeOf;

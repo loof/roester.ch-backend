@@ -18,6 +18,7 @@ public class ProductRequestDTO {
     private String description;
     private BigDecimal pricePerUnit;
     private Integer soldUnitId;
+    private Double amountInStock;
 
     public ProductRequestDTO() {
     }

@@ -1,6 +1,7 @@
 package ch.roester.product;
 
 import ch.roester.tag.TagRepository;
+import ch.roester.unit.Unit;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -47,26 +48,45 @@ public class ProductService {
     }
 
     public ProductResponseDTO update(Integer id, ProductRequestDTO updatingProductDTO) {
-        Product existingProduct = productRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        updatingProductDTO.setId(id);
+        // Fetch the existing product
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-        if (existingProduct == null) {
-            throw new EntityNotFoundException();
-        }
-
+        // Use the ProductMapper to convert the DTO to a Product entity
         Product updatingProductEntity = productMapper.fromRequestDTO(updatingProductDTO);
 
-        if (updatingProductDTO.getName() == null) {
-            updatingProductDTO.setName(existingProduct.getName());
+        // Update only non-null fields from the DTO to the existing Product
+        if (updatingProductDTO.getName() != null) {
+            existingProduct.setName(updatingProductEntity.getName());
         }
 
-        if (updatingProductDTO.getDescription() == null) {
-            updatingProductDTO.setDescription(existingProduct.getDescription());
+        if (updatingProductDTO.getDescription() != null) {
+            existingProduct.setDescription(updatingProductEntity.getDescription());
         }
 
-        BeanUtils.copyProperties(productMapper.fromRequestDTO(updatingProductDTO), existingProduct);
-        return productMapper.toResponseDTO(productRepository.save(existingProduct));
+        if (updatingProductDTO.getAmountInStock() != null) {
+            existingProduct.setAmountInStock(updatingProductEntity.getAmountInStock());
+        }
+
+        if (updatingProductDTO.getPricePerUnit() != null) {
+            existingProduct.setPricePerUnit(updatingProductEntity.getPricePerUnit());
+        }
+
+        // The Unit and Stock relationships will be handled by the mapper
+        if (updatingProductEntity.getSoldUnit() != null) {
+            existingProduct.setSoldUnit(updatingProductEntity.getSoldUnit());
+        }
+
+        if (updatingProductEntity.getStock() != null) {
+            existingProduct.setStock(updatingProductEntity.getStock());
+        }
+
+        // Save the updated product and return the response DTO
+        Product updatedProduct = productRepository.save(existingProduct);
+        return productMapper.toResponseDTO(updatedProduct);
     }
+
+
 
     public ProductResponseDTO save(ProductRequestDTO product) {
         return productMapper.toResponseDTO(productRepository.save(productMapper.fromRequestDTO(product)));
