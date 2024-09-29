@@ -8,10 +8,9 @@ import lombok.Setter;
 @Getter
 public class PartRequestDTO {
     private Integer id;
-
-
-
-    public PartRequestDTO() {
-    }
+    private Integer partId;
+    private Integer productId;
+    private Double amount;
+    private Integer unitId;
 
 }

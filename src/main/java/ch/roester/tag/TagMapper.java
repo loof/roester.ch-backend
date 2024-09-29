@@ -18,6 +18,9 @@ public interface TagMapper extends EntityMapper<TagRequestDTO, TagResponseDTO, T
 
     @Named("productsToProductIds")
     default Set<Integer> productsToProductIds(Set<Product> products) {
+        if (products == null || products.isEmpty()) {
+            return null;
+        }
         Set<Integer> productIds = new HashSet<>();
         for (Product product : products) {
             if (product.getId() != null) {
