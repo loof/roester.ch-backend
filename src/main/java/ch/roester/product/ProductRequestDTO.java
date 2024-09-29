@@ -19,6 +19,7 @@ public class ProductRequestDTO {
     private BigDecimal pricePerUnit;
     private Integer soldUnitId;
     private Double amountInStock;
+    private Integer stockId;
 
     public ProductRequestDTO() {
     }

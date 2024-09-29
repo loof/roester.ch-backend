@@ -4,6 +4,7 @@ import ch.roester.mapper.EntityMapper;
 import ch.roester.part.Part;
 import ch.roester.part.PartMapper;
 import ch.roester.property.PropertyMapper;
+import ch.roester.stock.Stock;
 import ch.roester.tag.Tag;
 import ch.roester.tag.TagMapper;
 import ch.roester.tag.TagResponseDTO;
@@ -26,6 +27,7 @@ public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductRe
 
     @Override
     @Mapping(source = "soldUnitId", target = "soldUnit", qualifiedByName = "soldUnitIdToSoldUnit")
+    @Mapping(source = "stockId", target = "stock", qualifiedByName = "stockIdToStock")
     Product fromRequestDTO(ProductRequestDTO dto);
 
     @Named("soldUnitIdToSoldUnit")
@@ -34,6 +36,16 @@ public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductRe
             Unit unit = new Unit();
             unit.setId(unitId);
             return unit;
+        }
+        return null;
+    }
+
+    @Named("stockIdToStock")
+    default Stock stockIdToStock(Integer stockId) {
+        if (stockId != null) {
+            Stock stock = new Stock();
+            stock.setId(stockId);
+            return stock;
         }
         return null;
     }
