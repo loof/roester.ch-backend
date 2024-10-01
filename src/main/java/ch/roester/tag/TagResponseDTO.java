@@ -11,4 +11,6 @@ public class TagResponseDTO extends TagRequestDTO {
 
     private Set<Integer> productIds;
 
+
+
 }

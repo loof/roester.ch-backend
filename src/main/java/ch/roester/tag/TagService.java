@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -60,6 +61,8 @@ public class TagService {
         return tagMapper.toResponseDTO(tagRepository.save(tag)); // Save and convert back to DTO
     }
 
+
+
     // Delete a tag by ID
     public void deleteById(Integer id) {
         tagRepository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -72,5 +75,10 @@ public class TagService {
         return tags.stream()
                 .map(tagMapper::toResponseDTO)
                 .collect(Collectors.toSet());
+    }
+
+    // Find tags by ids
+    public Set<Tag> findTagsIds(Set<Integer> tagIds) {
+        return new HashSet<>(tagRepository.findAllById(tagIds));
     }
 }

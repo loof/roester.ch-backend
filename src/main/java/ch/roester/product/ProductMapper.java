@@ -28,7 +28,19 @@ public interface ProductMapper extends EntityMapper<ProductRequestDTO, ProductRe
     @Override
     @Mapping(source = "soldUnitId", target = "soldUnit", qualifiedByName = "soldUnitIdToSoldUnit")
     @Mapping(source = "stockId", target = "stock", qualifiedByName = "stockIdToStock")
+    @Mapping(source = "tagIds", target = "tags", qualifiedByName = "tagIdsToTags")
     Product fromRequestDTO(ProductRequestDTO dto);
+
+    @Named("tagIdsToTags")
+    default Set<Tag> tagIdsToTags(Set<Integer> tagIds) {
+        Set<Tag> tags = new HashSet<>();
+        for (Integer tagId : tagIds) {
+            Tag tag = new Tag();
+            tag.setId(tagId);
+            tags.add(tag);
+        }
+        return tags;
+    }
 
     @Named("soldUnitIdToSoldUnit")
     default Unit soldUnitIdToSoldUnit(Integer unitId) {

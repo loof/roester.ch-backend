@@ -18,4 +18,5 @@ public interface TagRepository extends PagingAndSortingRepository<Tag, Integer>,
     @Query("select t from Tag t " +
             "where t.name like concat('%', :searchQuery, '%') ")
     Page<Tag> findAllByName(String searchQuery, Pageable pageable);
+
 }

@@ -6,6 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 @Setter
@@ -20,6 +24,7 @@ public class ProductRequestDTO {
     private Integer soldUnitId;
     private Double amountInStock;
     private Integer stockId;
+    private Set<Integer> tagIds = new HashSet<>();
 
     public ProductRequestDTO() {
     }

@@ -1,6 +1,7 @@
 package ch.roester.tag;
 
 import ch.roester.event.EventResponseDTO;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -32,7 +33,8 @@ public class TagController {
 
     // Create a new tag
     @PostMapping
-    public ResponseEntity<TagResponseDTO> createTag(@RequestBody TagRequestDTO tagRequestDTO) {
+    public ResponseEntity<TagResponseDTO> createTag(@RequestBody @Valid TagRequestDTO tagRequestDTO) {
+        tagRequestDTO.setName(tagRequestDTO.getName().toLowerCase());
         TagResponseDTO createdTag = tagService.save(tagRequestDTO);
         return new ResponseEntity<>(createdTag, HttpStatus.CREATED);
     }

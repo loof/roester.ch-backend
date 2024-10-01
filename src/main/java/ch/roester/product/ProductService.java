@@ -1,6 +1,6 @@
 package ch.roester.product;
 
-import ch.roester.tag.TagRepository;
+import ch.roester.tag.*;
 import ch.roester.unit.Unit;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -20,11 +23,17 @@ import java.util.Optional;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final TagMapper tagMapper;
+    private final TagService tagService;
+    private final TagRepository tagRepository;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, TagRepository tagRepository, ProductMapper productMapper) {
+    public ProductService(ProductRepository productRepository, TagRepository tagRepository, ProductMapper productMapper, TagService tagService, TagMapper tagMapper) {
         this.productMapper = productMapper;
         this.productRepository = productRepository;
+        this.tagService = tagService;
+        this.tagMapper = tagMapper;
+        this.tagRepository = tagRepository;
     }
 
     public Page<ProductResponseDTO> findAll(Pageable pageable) {
@@ -47,49 +56,56 @@ public class ProductService {
         return productMapper.toResponseDTO(productRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
+
+    @Transactional
     public ProductResponseDTO update(Integer id, ProductRequestDTO updatingProductDTO) {
         // Fetch the existing product
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-        // Use the ProductMapper to convert the DTO to a Product entity
-        Product updatingProductEntity = productMapper.fromRequestDTO(updatingProductDTO);
+        Product updatingProduct = productMapper.fromRequestDTO(updatingProductDTO);
 
-        // Update only non-null fields from the DTO to the existing Product
-        if (updatingProductDTO.getName() != null) {
-            existingProduct.setName(updatingProductEntity.getName());
-        }
-
-        if (updatingProductDTO.getDescription() != null) {
-            existingProduct.setDescription(updatingProductEntity.getDescription());
-        }
-
-        if (updatingProductDTO.getAmountInStock() != null) {
-            existingProduct.setAmountInStock(updatingProductEntity.getAmountInStock());
-        }
-
-        if (updatingProductDTO.getPricePerUnit() != null) {
-            existingProduct.setPricePerUnit(updatingProductEntity.getPricePerUnit());
-        }
-
-        // The Unit and Stock relationships will be handled by the mapper
-        if (updatingProductEntity.getSoldUnit() != null) {
-            existingProduct.setSoldUnit(updatingProductEntity.getSoldUnit());
-        }
-
-        if (updatingProductEntity.getStock() != null) {
-            existingProduct.setStock(updatingProductEntity.getStock());
-        }
+        mergeProducts(existingProduct, updatingProduct);
 
         // Save the updated product and return the response DTO
         Product updatedProduct = productRepository.save(existingProduct);
         return productMapper.toResponseDTO(updatedProduct);
     }
 
+    private void mergeProducts(Product existingProduct, Product updatingProduct) {
 
+        // Update only non-null fields from the DTO to the existing Product
+        if (updatingProduct.getName() != null) {
+            existingProduct.setName(updatingProduct.getName());
+        }
 
-    public ProductResponseDTO save(ProductRequestDTO product) {
-        return productMapper.toResponseDTO(productRepository.save(productMapper.fromRequestDTO(product)));
+        if (updatingProduct.getDescription() != null) {
+            existingProduct.setDescription(updatingProduct.getDescription());
+        }
+
+        if (updatingProduct.getAmountInStock() != null) {
+            existingProduct.setAmountInStock(updatingProduct.getAmountInStock());
+        }
+
+        if (updatingProduct.getPricePerUnit() != null) {
+            existingProduct.setPricePerUnit(updatingProduct.getPricePerUnit());
+        }
+
+        if (updatingProduct.getSoldUnit() != null) {
+            existingProduct.setSoldUnit(updatingProduct.getSoldUnit());
+        }
+
+        if (updatingProduct.getStock() != null) {
+            existingProduct.setStock(updatingProduct.getStock());
+        }
+
+        if (updatingProduct.getTags() != null) {
+            existingProduct.setTags(updatingProduct.getTags());
+        }
+    }
+
+    public ProductResponseDTO save(ProductRequestDTO productRequestDTO) {
+        return productMapper.toResponseDTO(productRepository.save(productMapper.fromRequestDTO(productRequestDTO)));
     }
 
     public void deleteById(Integer id) {

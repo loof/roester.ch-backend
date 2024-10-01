@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,11 +24,7 @@ public class Tag {
     @Column(name = "name", unique = true, length = 50, nullable = false)
     private String name;
 
-    @ManyToMany
-    @JoinTable(
-            name = "product_tag",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @ManyToMany(mappedBy = "tags")
     private Set<Product> products;
 
     @Override
