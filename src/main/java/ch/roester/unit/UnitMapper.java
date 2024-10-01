@@ -17,5 +17,4 @@ import java.util.Set;
 @Mapper(componentModel = "spring")
 public interface UnitMapper extends EntityMapper<UnitRequestDTO, UnitResponseDTO, Unit> {
 
-
 }

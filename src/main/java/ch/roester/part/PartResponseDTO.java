@@ -11,4 +11,5 @@ import java.util.Set;
 @Getter
 public class PartResponseDTO extends PartRequestDTO {
     private UnitResponseDTO unit;
+    private ProductResponseDTO part;
 }
