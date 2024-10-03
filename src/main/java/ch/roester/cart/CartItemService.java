@@ -53,8 +53,6 @@ public class CartItemService {
         Variant variant = variantRepository.findById(updatingCartItem.getVariantId()).orElseThrow(EntityNotFoundException::new);
         double deltaAmount = updatingCartItem.getAmount() - existingCartItem.getAmount();
         Cart cart = cartRepository.findById(cartId).orElseThrow(EntityNotFoundException::new);
-        BigDecimal currentTotal = cart.getTotal();
-        cart.setTotal(currentTotal.add(variant.getStockMultiplier().multiply(variant.getProduct().getPricePerUnit()).multiply(BigDecimal.valueOf(deltaAmount))));
         cartRepository.save(cart);
         BeanUtils.copyProperties(updatingCartItem, existingCartItem);
         return cartItemMapper.toResponseDTO(cartItemRepository.save(existingCartItem));
@@ -93,6 +91,7 @@ public class CartItemService {
         }
         return responseDTOs;
     }
+
     @Transactional
     public CartItemResponseDTO save(Integer cartId, CartItemRequestDTO cartItemRequestDTO) {
 
@@ -104,11 +103,11 @@ public class CartItemService {
             event = eventRepository.findById(cartItemRequestDTO.getEventId()).orElseThrow(EntityNotFoundException::new);
         }
 
-        if (cart.getTotal() != null) {
+        /*if (cart.getTotal() != null) {
             cart.setTotal(cart.getTotal().add(variant.getStockMultiplier().multiply(variant.getProduct().getPricePerUnit()).multiply(BigDecimal.valueOf(cartItemRequestDTO.getAmount())) ));
         } else {
             cart.setTotal(variant.getStockMultiplier().multiply(variant.getProduct().getPricePerUnit()).multiply(BigDecimal.valueOf(cartItemRequestDTO.getAmount())));
-        }
+        }*/
 
         cart = cartRepository.save(cart);
 
@@ -142,7 +141,6 @@ public class CartItemService {
     @Transactional
     public void deleteById(Integer id) {
         CartItem cartItem = cartItemRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        cartItem.getCart().setTotal(cartItem.getCart().getTotal().subtract(cartItem.getVariant().getStockMultiplier().multiply(cartItem.getVariant().getProduct().getPricePerUnit()).multiply(BigDecimal.valueOf(cartItem.getAmount()))));
         cartItemRepository.delete(cartItem);
         cartItemRepository.deleteById(id);
     }

@@ -12,5 +12,4 @@ public class CartResponseDTO extends CartRequestDTO {
     private List<CartItemResponseDTO> items;
     private Integer userId;
     private BigDecimal total;
-
 }

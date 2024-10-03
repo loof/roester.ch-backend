@@ -28,9 +28,6 @@ public class Cart {
     @OneToMany(mappedBy="cart")
     private Set<CartItem> items;
 
-    @Column(name = "total")
-    @Min(0)
-    private BigDecimal total;
 
     @Override
     public boolean equals(Object o) {

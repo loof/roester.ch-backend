@@ -5,11 +5,11 @@ import ch.roester.mapper.EntityMapper;
 import ch.roester.product.Product;
 import ch.roester.variant.Variant;
 import ch.roester.variant.VariantMapper;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import ch.roester.variant.VariantResponseDTO;
+import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -70,4 +70,8 @@ public interface CartItemMapper extends EntityMapper<CartItemRequestDTO, CartIte
         return cart.getId();
     }
 
+    @AfterMapping
+    default void calculateSubTotal(CartItem cartItem, @MappingTarget CartItemResponseDTO dto) {
+        dto.setSubTotal(cartItem.getVariant().getStockMultiplier().multiply(cartItem.getVariant().getProduct().getPricePerUnit()).multiply(BigDecimal.valueOf(dto.getAmount())));
+    }
 }

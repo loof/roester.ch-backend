@@ -5,6 +5,7 @@ import ch.roester.variant.VariantResponseDTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,4 +14,5 @@ import java.util.Objects;
 public class CartItemResponseDTO extends CartItemRequestDTO {
     private VariantResponseDTO variant;
     private Integer cartId;
+    private BigDecimal subTotal;
 }
