@@ -22,6 +22,7 @@ import java.util.List;
 public interface EventProductAmountMapper extends EntityMapper<EventProductAmountRequestDTO, EventProductAmountResponseDTO, EventProductAmount> {
     @Override
     @Mapping(target = "eventId", source = "event", qualifiedByName = "eventToEventId")
+    @Mapping(target = "productId", source = "product", qualifiedByName = "productToProductId")
     EventProductAmountResponseDTO toResponseDTO(EventProductAmount eventProductAmount);
 
     @Override

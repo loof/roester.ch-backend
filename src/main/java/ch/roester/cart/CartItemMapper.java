@@ -1,6 +1,7 @@
 package ch.roester.cart;
 
 import ch.roester.event.Event;
+import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.mapper.EntityMapper;
 import ch.roester.product.Product;
 import ch.roester.variant.Variant;
@@ -18,23 +19,31 @@ import java.util.Set;
 public interface CartItemMapper extends EntityMapper<CartItemRequestDTO, CartItemResponseDTO, CartItem> {
 
     @Override
-    @Mapping(target = "eventId", source = "event", qualifiedByName = "eventToEventId")
+    @Mapping(target = "eventProductAmountId", source = "eventProductAmount", qualifiedByName = "eventProductAmountToEventProductAmountId")
     @Mapping(target = "variantId", source = "variant", qualifiedByName = "variantToVariantId")
     @Mapping(target = "cartId", source = "cart", qualifiedByName = "cartToCartId")
     CartItemResponseDTO toResponseDTO(CartItem cart);
 
     @Override
-    @Mapping(target = "event", source = "eventId", qualifiedByName = "eventIdToEvent")
+    @Mapping(target = "eventProductAmount", source = "eventProductAmountId", qualifiedByName = "eventProductAmountIdToEventProductAmount")
     @Mapping(target = "variant", source = "variantId", qualifiedByName = "variantIdToVariant")
     CartItem fromRequestDTO(CartItemRequestDTO dto);
 
-    @Named("eventIdToEvent")
-    default Event eventIdToEvent(Integer eventId) {
-        Event event = new Event();
-        if (eventId != null) {
-            event.setId(eventId);
+    @Named("eventProductAmountToEventProductAmountId")
+    default Integer eventProductAmountToEventProductAmountId(EventProductAmount eventProductAmount) {
+        if (eventProductAmount != null) {
+            return eventProductAmount.getId();
         }
-        return event;
+        return null;
+    }
+
+    @Named("eventProductAmountIdToEventProductAmount")
+    default EventProductAmount eventProductAmountIdToEventProductAmount(Integer eventProductAmountId) {
+        EventProductAmount eventProductAmount = new EventProductAmount();
+        if (eventProductAmountId != null) {
+            eventProductAmount.setId(eventProductAmountId);
+        }
+        return eventProductAmount;
     }
 
     @Named("variantIdToVariant")
@@ -53,11 +62,6 @@ public interface CartItemMapper extends EntityMapper<CartItemRequestDTO, CartIte
             cart.setId(cartId);
         }
         return cart;
-    }
-
-    @Named("eventToEventId")
-    default Integer eventToEventId(Event event) {
-        return event.getId();
     }
 
     @Named("variantToVariantId")

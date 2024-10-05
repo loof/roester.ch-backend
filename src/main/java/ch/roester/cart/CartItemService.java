@@ -2,6 +2,8 @@ package ch.roester.cart;
 
 import ch.roester.event.Event;
 import ch.roester.event.EventRepository;
+import ch.roester.event_product_amount.EventProductAmount;
+import ch.roester.event_product_amount.EventProductAmountRepository;
 import ch.roester.variant.Variant;
 import ch.roester.variant.VariantRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,14 +28,16 @@ public class CartItemService {
     private final EventRepository eventRepository;
     private final VariantRepository variantRepository;
     private final CartRepository cartRepository;
+    private final EventProductAmountRepository eventProductAmountRepository;
 
     @Autowired
-    public CartItemService(CartItemRepository cartItemRepository, CartItemMapper cartItemMapper, EventRepository eventRepository, VariantRepository variantRepository, CartRepository cartRepository) {
+    public CartItemService(CartItemRepository cartItemRepository, CartItemMapper cartItemMapper, EventRepository eventRepository, VariantRepository variantRepository, CartRepository cartRepository, EventProductAmountRepository eventProductAmountRepository) {
         this.cartItemMapper = cartItemMapper;
         this.cartItemRepository = cartItemRepository;
         this.eventRepository = eventRepository;
         this.variantRepository = variantRepository;
         this.cartRepository = cartRepository;
+        this.eventProductAmountRepository = eventProductAmountRepository;
     }
 
     public Page<CartItemResponseDTO> findAll(Pageable pageable) {
@@ -98,9 +102,9 @@ public class CartItemService {
         Variant variant = variantRepository.findById(cartItemRequestDTO.getVariantId()).orElseThrow(EntityNotFoundException::new);
         Cart cart = cartRepository.findById(cartId).orElseThrow(EntityNotFoundException::new);
 
-        Event event = null;
-        if (cartItemRequestDTO.getEventId() != null) {
-            event = eventRepository.findById(cartItemRequestDTO.getEventId()).orElseThrow(EntityNotFoundException::new);
+        EventProductAmount eventProductAmount = null;
+        if (cartItemRequestDTO.getEventProductAmountId() != null) {
+            eventProductAmount = eventProductAmountRepository.findById(cartItemRequestDTO.getEventProductAmountId()).orElseThrow(EntityNotFoundException::new);
         }
 
         /*if (cart.getTotal() != null) {
@@ -117,7 +121,7 @@ public class CartItemService {
         // Check if there is an existing cart item (variant and optionally event are the same).
         for (CartItem existingCartItem : existingCartItems) {
             if (Objects.equals(existingCartItem.getVariant().getId(), cartItemRequestDTO.getVariantId())) {
-                if ((cartItemRequestDTO.getEventId() == null && existingCartItem.getEvent() == null) || Objects.equals(cartItemRequestDTO.getEventId(), existingCartItem.getEvent().getId())) {
+                if ((cartItemRequestDTO.getEventProductAmountId() == null)) {
                     cartItemToSave = existingCartItem;
                 }
             }
@@ -131,8 +135,8 @@ public class CartItemService {
         } else {
             cartItemToSave.setAmount(cartItemToSave.getAmount() + cartItemRequestDTO.getAmount());
         }
-        if (event != null) {
-            cartItemToSave.setEvent(event);
+        if (eventProductAmount != null) {
+            cartItemToSave.setEventProductAmount(eventProductAmount);
         }
 
         return cartItemMapper.toResponseDTO(cartItemRepository.save(cartItemToSave));

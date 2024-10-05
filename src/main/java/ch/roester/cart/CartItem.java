@@ -1,6 +1,7 @@
 package ch.roester.cart;
 import ch.roester.app_user.AppUser;
 import ch.roester.event.Event;
+import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.variant.Variant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -30,8 +31,8 @@ public class CartItem {
     private Variant variant;
 
     @ManyToOne
-    @JoinColumn(name="event_id")
-    private Event event;
+    @JoinColumn(name="event_product_amount_id")
+    private EventProductAmount eventProductAmount;
 
     @Column(name = "amount", nullable = false)
     @Min(1)

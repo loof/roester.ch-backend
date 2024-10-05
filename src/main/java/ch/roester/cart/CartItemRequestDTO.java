@@ -10,7 +10,7 @@ import java.util.Objects;
 @Setter
 public class CartItemRequestDTO {
     private Integer id;
-    private Integer eventId;
+    private Integer eventProductAmountId;
     private Integer variantId;
     private Double amount;
 
@@ -19,11 +19,11 @@ public class CartItemRequestDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CartItemRequestDTO that = (CartItemRequestDTO) o;
-        return getVariantId().equals(that.getVariantId()) && getEventId() == that.getEventId();
+        return getVariantId().equals(that.getVariantId()) && getEventProductAmountId() == that.getEventProductAmountId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getVariantId(), getEventId());
+        return Objects.hash(getVariantId(), getEventProductAmountId());
     }
 }
