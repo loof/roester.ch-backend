@@ -121,7 +121,7 @@ public class CartItemService {
         // Check if there is an existing cart item (variant and optionally event are the same).
         for (CartItem existingCartItem : existingCartItems) {
             if (Objects.equals(existingCartItem.getVariant().getId(), cartItemRequestDTO.getVariantId())) {
-                if ((cartItemRequestDTO.getEventProductAmountId() == null)) {
+                if ((existingCartItem.getEventProductAmount() == null && cartItemRequestDTO.getEventProductAmountId() == null) || Objects.equals(Objects.requireNonNull(existingCartItem.getEventProductAmount()).getId(), cartItemRequestDTO.getEventProductAmountId())) {
                     cartItemToSave = existingCartItem;
                 }
             }
