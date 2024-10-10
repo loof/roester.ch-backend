@@ -4,6 +4,7 @@ import ch.roester.cart.Cart;
 import ch.roester.cart.CartRepository;
 import ch.roester.exception.FailedValidationException;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,10 +12,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ public class AppUserService {
     }
 
     public AppUser create(AppUser appUser) throws MessagingException, UnsupportedEncodingException {
+
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         String randomCode = RandomStringUtils.random(64, true, true);
         appUser.setVerificationCode(randomCode);
@@ -46,10 +50,13 @@ public class AppUserService {
         cartRepository.save(cart);
         //appUser.setEnabled(true);
         //sendVerificationEmail(appUser);
+
         return appUserRepository.save(appUser);
     }
 
-    public AppUser findByEmail(String email) {return appUserRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);}
+    public AppUser findByEmail(String email) {
+        return appUserRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+    }
 
     public List<AppUser> findAll() {
         return appUserRepository.findAll();

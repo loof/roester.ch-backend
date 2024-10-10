@@ -4,7 +4,9 @@ import ch.roester.cart.Cart;
 import ch.roester.event.Event;
 import ch.roester.location.Location;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +25,7 @@ public class AppUser {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", optional = false)
     private Cart cart;
 
     @Column(name = "firstname", nullable = false)
@@ -35,6 +37,10 @@ public class AppUser {
     @Size(max = 100)
     @NotNull
     @Column(name = "email", nullable = false, length = 100, unique = true)
+    @Email
+
+    // RFC 2822 email validation
+    @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="E-Mail Adresse ungültig")
     private String email;
 
     @Size(max = 255)
@@ -46,6 +52,9 @@ public class AppUser {
     private String verificationCode;
 
     private boolean enabled;
+
+    @Column(name = "company_name")
+    private String companyName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
