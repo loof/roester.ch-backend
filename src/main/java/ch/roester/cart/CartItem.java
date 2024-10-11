@@ -26,7 +26,7 @@ public class CartItem {
     @JoinColumn(name="cart_id", nullable=false)
     private Cart cart;
 
-    @ManyToOne(cascade =  CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "variant_id", nullable = false)
     private Variant variant;
 
