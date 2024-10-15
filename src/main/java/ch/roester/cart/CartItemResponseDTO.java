@@ -15,4 +15,5 @@ public class CartItemResponseDTO extends CartItemRequestDTO {
     private VariantResponseDTO variant;
     private Integer cartId;
     private BigDecimal subTotal;
+    private Double eventProductAmountLeft;
 }

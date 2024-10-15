@@ -78,4 +78,9 @@ public interface CartItemMapper extends EntityMapper<CartItemRequestDTO, CartIte
     default void calculateSubTotal(CartItem cartItem, @MappingTarget CartItemResponseDTO dto) {
         dto.setSubTotal(cartItem.getVariant().getStockMultiplier().multiply(cartItem.getVariant().getProduct().getPricePerUnit()).multiply(BigDecimal.valueOf(dto.getAmount())));
     }
+
+    @AfterMapping
+    default void setEventProductAmountLeft(CartItem cartItem, @MappingTarget CartItemResponseDTO dto) {
+        dto.setEventProductAmountLeft(cartItem.getEventProductAmount().getAmountLeft());
+    }
 }

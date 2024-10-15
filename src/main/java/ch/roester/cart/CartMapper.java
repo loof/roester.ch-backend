@@ -28,5 +28,4 @@ public interface CartMapper extends EntityMapper<CartRequestDTO, CartResponseDTO
         }
         dto.setTotal(total);
     }
-
 }

@@ -29,6 +29,10 @@ public class CartItemService {
     private final VariantRepository variantRepository;
     private final CartRepository cartRepository;
     private final EventProductAmountRepository eventProductAmountRepository;
+    private static final Set<Integer> eventProductAmountIds = new HashSet<>();
+    private static final Set<Integer> variantIds = new HashSet<>();
+    private static final HashMap<Integer, EventProductAmount> eventProductAmountsMap = new HashMap<>();
+    private static final HashMap<Integer, Variant> variantsMap = new HashMap<>();
 
     @Autowired
     public CartItemService(CartItemRepository cartItemRepository, CartItemMapper cartItemMapper, EventRepository eventRepository, VariantRepository variantRepository, CartRepository cartRepository, EventProductAmountRepository eventProductAmountRepository) {
@@ -62,13 +66,53 @@ public class CartItemService {
         return cartItemMapper.toResponseDTO(cartItemRepository.save(existingCartItem));
     }
 
+    private void prepareVariantsCache(CartItemRequestDTO[] cartItems) {
+        // Loop through the array of CartItemRequestDTO and add ids to cache
+        for (CartItemRequestDTO item : cartItems) {
+            variantIds.add(item.getVariantId());
+        }
+
+        List<Variant> variants = variantRepository.findAllById(variantIds);
+
+        for (Variant variant : variants) {
+            variantsMap.put(variant.getId(), variant);
+        }
+    }
+
+    private void prepareEventProductAmountCache(CartItemRequestDTO[] cartItems) {
+        // Loop through the array of CartItemRequestDTO and add ids to cache
+        for (CartItemRequestDTO item : cartItems) {
+            eventProductAmountIds.add(item.getEventProductAmountId());
+        }
+
+        List<EventProductAmount> eventProductAmounts = eventProductAmountRepository.findAllById(eventProductAmountIds);
+
+        for (EventProductAmount eventProductAmount : eventProductAmounts) {
+            eventProductAmountsMap.put(eventProductAmount.getId(), eventProductAmount);
+        }
+    }
+
+    private BigDecimal getSubTotalForEventProduct(EventProductAmount epa, Set<CartItem> cartItems) {
+        if (epa == null) {
+            return new BigDecimal(0);
+        }
+        BigDecimal subTotal = new BigDecimal(0);
+        for (CartItem item : cartItems) {
+            BigDecimal stockMultiplier = variantsMap.get(item.getVariant().getId()).getStockMultiplier();
+            if (Objects.equals(item.getEventProductAmount().getId(), epa.getId())) {
+                subTotal = subTotal.add(stockMultiplier.multiply(BigDecimal.valueOf(item.getAmount())));
+            }
+        }
+
+        return subTotal;
+    }
+
     private CartItemRequestDTO[] mergeCartItems(CartItemRequestDTO[] cartItems) {
+
         // Map to store merged CartItemRequestDTOs with summed amounts
         Map<CartItemRequestDTO, Double> mergedItemsMap = new HashMap<>();
 
-        // Loop through the array of CartItemRequestDTO
         for (CartItemRequestDTO item : cartItems) {
-            // If the item already exists in the map, sum up the amount
             mergedItemsMap.merge(item, item.getAmount(), Double::sum);
         }
 
@@ -88,6 +132,9 @@ public class CartItemService {
 
     @Transactional
     public CartItemResponseDTO[] saveAll(Integer cartId, CartItemRequestDTO[] cartItemRequestDTOS) {
+        prepareVariantsCache(cartItemRequestDTOS);
+        prepareEventProductAmountCache(cartItemRequestDTOS);
+
         cartItemRequestDTOS = mergeCartItems(cartItemRequestDTOS);
         CartItemResponseDTO[] responseDTOs = new CartItemResponseDTO[cartItemRequestDTOS.length];
         for (int i = 0; i < cartItemRequestDTOS.length; i++) {
@@ -107,14 +154,6 @@ public class CartItemService {
             eventProductAmount = eventProductAmountRepository.findById(cartItemRequestDTO.getEventProductAmountId()).orElseThrow(EntityNotFoundException::new);
         }
 
-        /*if (cart.getTotal() != null) {
-            cart.setTotal(cart.getTotal().add(variant.getStockMultiplier().multiply(variant.getProduct().getPricePerUnit()).multiply(BigDecimal.valueOf(cartItemRequestDTO.getAmount())) ));
-        } else {
-            cart.setTotal(variant.getStockMultiplier().multiply(variant.getProduct().getPricePerUnit()).multiply(BigDecimal.valueOf(cartItemRequestDTO.getAmount())));
-        }*/
-
-        cart = cartRepository.save(cart);
-
         Set<CartItem> existingCartItems = cart.getItems();
         CartItem cartItemToSave = null;
 
@@ -129,14 +168,22 @@ public class CartItemService {
 
         // If no existing cart item found, create entity object to save
         if (cartItemToSave == null) {
+
             cartItemToSave = cartItemMapper.fromRequestDTO(cartItemRequestDTO);
             cartItemToSave.setVariant(variant);
             cartItemToSave.setCart(cart);
+
         } else {
-            cartItemToSave.setAmount(cartItemToSave.getAmount() + cartItemRequestDTO.getAmount());
-        }
-        if (eventProductAmount != null) {
-            cartItemToSave.setEventProductAmount(eventProductAmount);
+
+            BigDecimal amount = BigDecimal.valueOf(cartItemRequestDTO.getAmount());
+            BigDecimal stockMultiplier = variantsMap.get(cartItemToSave.getVariant().getId()).getStockMultiplier(); // Assuming it's already BigDecimal
+            BigDecimal subTotal = getSubTotalForEventProduct(eventProductAmountsMap.get(cartItemToSave.getEventProductAmount().getId()), cart.getItems()); // Assuming this returns BigDecimal
+            BigDecimal amountLeft = BigDecimal.valueOf(eventProductAmountsMap.get(cartItemToSave.getEventProductAmount().getId()).getAmountLeft());
+            if (amount.multiply(stockMultiplier).add(subTotal).compareTo(amountLeft) <= 0) {
+                // If the item already exists in the map, sum up the amount
+                cartItemToSave.setAmount(cartItemToSave.getAmount() + cartItemRequestDTO.getAmount());
+            }
+
         }
 
         return cartItemMapper.toResponseDTO(cartItemRepository.save(cartItemToSave));
