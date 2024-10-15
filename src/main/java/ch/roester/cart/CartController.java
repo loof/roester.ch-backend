@@ -16,7 +16,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 
 @RequestMapping(CartController.REQUEST_MAPPING)
@@ -64,8 +66,8 @@ public class CartController {
     @PostMapping("{id}/items")
     public ResponseEntity<CartResponseDTO> createCartItems(@RequestBody @Valid CartItemRequestDTO[] cartItemRequestDTOS, @PathVariable("id") Integer cartId) {
         try {
-            CartItemResponseDTO[] savedCartItems = cartItemService.saveAll(cartId, cartItemRequestDTOS);
-            if (savedCartItems.length > 0) {
+            Set<CartItemResponseDTO> savedCartItems = cartItemService.saveAll(cartId, cartItemRequestDTOS);
+            if (!savedCartItems.isEmpty()) {
                 CartResponseDTO cartResponseDTO = cartService.findById(cartId);
                 return ResponseEntity.status(HttpStatus.CREATED).body(cartResponseDTO);
             } else {

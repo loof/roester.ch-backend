@@ -4,6 +4,7 @@ import ch.roester.event.Event;
 import ch.roester.event.EventRepository;
 import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.event_product_amount.EventProductAmountRepository;
+import ch.roester.exception.FailedValidationException;
 import ch.roester.variant.Variant;
 import ch.roester.variant.VariantRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -98,7 +99,7 @@ public class CartItemService {
         }
         BigDecimal subTotal = new BigDecimal(0);
         for (CartItem item : cartItems) {
-            BigDecimal stockMultiplier = variantsMap.get(item.getVariant().getId()).getStockMultiplier();
+            BigDecimal stockMultiplier = item.getVariant().getStockMultiplier();
             if (Objects.equals(item.getEventProductAmount().getId(), epa.getId())) {
                 subTotal = subTotal.add(stockMultiplier.multiply(BigDecimal.valueOf(item.getAmount())));
             }
@@ -131,23 +132,29 @@ public class CartItemService {
     }
 
     @Transactional
-    public CartItemResponseDTO[] saveAll(Integer cartId, CartItemRequestDTO[] cartItemRequestDTOS) {
+    public Set<CartItemResponseDTO> saveAll(Integer cartId, CartItemRequestDTO[] cartItemRequestDTOS) {
         prepareVariantsCache(cartItemRequestDTOS);
         prepareEventProductAmountCache(cartItemRequestDTOS);
 
         cartItemRequestDTOS = mergeCartItems(cartItemRequestDTOS);
-        CartItemResponseDTO[] responseDTOs = new CartItemResponseDTO[cartItemRequestDTOS.length];
-        for (int i = 0; i < cartItemRequestDTOS.length; i++) {
-            responseDTOs[i] = save(cartId, cartItemRequestDTOS[i]);
+        Set<CartItemResponseDTO> responseDTOs = new HashSet<>();
+        Cart cart = cartRepository.findById(cartId).orElseThrow(EntityNotFoundException::new);
+        for (CartItemRequestDTO cartItemRequestDTO : cartItemRequestDTOS) {
+
+            try {
+                responseDTOs.add(save(cart, cartItemRequestDTO));
+            } catch (FailedValidationException e) {
+                return cartItemMapper.toResponseDTO(cart.getItems());
+            }
+
         }
         return responseDTOs;
     }
 
     @Transactional
-    public CartItemResponseDTO save(Integer cartId, CartItemRequestDTO cartItemRequestDTO) {
+    public CartItemResponseDTO save(Cart cart, CartItemRequestDTO cartItemRequestDTO) {
 
         Variant variant = variantRepository.findById(cartItemRequestDTO.getVariantId()).orElseThrow(EntityNotFoundException::new);
-        Cart cart = cartRepository.findById(cartId).orElseThrow(EntityNotFoundException::new);
 
         EventProductAmount eventProductAmount = null;
         if (cartItemRequestDTO.getEventProductAmountId() != null) {
@@ -166,19 +173,28 @@ public class CartItemService {
             }
         }
 
+        BigDecimal amount = BigDecimal.valueOf(cartItemRequestDTO.getAmount());
+        BigDecimal stockMultiplier = variantsMap.get(cartItemRequestDTO.getVariantId()).getStockMultiplier(); // Assuming it's already BigDecimal
+        BigDecimal subTotal = getSubTotalForEventProduct(eventProductAmountsMap.get(cartItemRequestDTO.getEventProductAmountId()), cart.getItems()); // Assuming this returns BigDecimal
+        BigDecimal amountLeft = BigDecimal.valueOf(eventProductAmountsMap.get(cartItemRequestDTO.getEventProductAmountId()).getAmountLeft());
+
         // If no existing cart item found, create entity object to save
         if (cartItemToSave == null) {
 
             cartItemToSave = cartItemMapper.fromRequestDTO(cartItemRequestDTO);
             cartItemToSave.setVariant(variant);
             cartItemToSave.setCart(cart);
+            if (amount.multiply(stockMultiplier).add(subTotal).compareTo(amountLeft) > 0) {
+                Map<String, List<String>> errors = new HashMap<>();
+                List<String> messages = new ArrayList<>();
+                messages.add("Amount not in stock");
+                errors.put("amount", messages);
+                throw new FailedValidationException(errors);
+            }
+
 
         } else {
 
-            BigDecimal amount = BigDecimal.valueOf(cartItemRequestDTO.getAmount());
-            BigDecimal stockMultiplier = variantsMap.get(cartItemToSave.getVariant().getId()).getStockMultiplier(); // Assuming it's already BigDecimal
-            BigDecimal subTotal = getSubTotalForEventProduct(eventProductAmountsMap.get(cartItemToSave.getEventProductAmount().getId()), cart.getItems()); // Assuming this returns BigDecimal
-            BigDecimal amountLeft = BigDecimal.valueOf(eventProductAmountsMap.get(cartItemToSave.getEventProductAmount().getId()).getAmountLeft());
             if (amount.multiply(stockMultiplier).add(subTotal).compareTo(amountLeft) <= 0) {
                 // If the item already exists in the map, sum up the amount
                 cartItemToSave.setAmount(cartItemToSave.getAmount() + cartItemRequestDTO.getAmount());
