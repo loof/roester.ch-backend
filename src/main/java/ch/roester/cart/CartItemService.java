@@ -110,29 +110,30 @@ public class CartItemService {
 
     private CartItemRequestDTO[] mergeCartItems(CartItemRequestDTO[] cartItems) {
 
-        // Map to store merged CartItemRequestDTOs with summed amounts
+        // Map to store merged CartItemRequestDTOs with the higher amount
         Map<CartItemRequestDTO, Double> mergedItemsMap = new HashMap<>();
 
         for (CartItemRequestDTO item : cartItems) {
-            mergedItemsMap.merge(item, item.getAmount(), Double::sum);
+            // For each item, check if it already exists in the map
+            mergedItemsMap.merge(item, item.getAmount(), (existingAmount, newAmount) -> Math.max(existingAmount, newAmount));
         }
 
-        // Convert the map entries into CartItemRequestDTO objects with updated amounts
+        // Convert the map entries into CartItemRequestDTO objects with the higher amount
         List<CartItemRequestDTO> mergedList = new ArrayList<>();
         for (Map.Entry<CartItemRequestDTO, Double> entry : mergedItemsMap.entrySet()) {
             CartItemRequestDTO mergedItem = entry.getKey();
-            mergedItem.setAmount(entry.getValue()); // Update the amount
+            mergedItem.setAmount(entry.getValue()); // Update the amount to the higher one
             mergedList.add(mergedItem);
         }
 
+        // Convert the merged list to an array and return
         CartItemRequestDTO[] result = new CartItemRequestDTO[mergedList.size()];
-
         return mergedList.toArray(result);
-
     }
 
+
     @Transactional
-    public Set<CartItemResponseDTO> saveAll(Integer cartId, CartItemRequestDTO[] cartItemRequestDTOS) {
+    public Set<CartItemResponseDTO> saveAll(Integer cartId, CartItemRequestDTO[] cartItemRequestDTOS, Boolean add) {
         prepareVariantsCache(cartItemRequestDTOS);
         prepareEventProductAmountCache(cartItemRequestDTOS);
 
@@ -142,7 +143,7 @@ public class CartItemService {
         for (CartItemRequestDTO cartItemRequestDTO : cartItemRequestDTOS) {
 
             try {
-                responseDTOs.add(save(cart, cartItemRequestDTO));
+                responseDTOs.add(save(cart, cartItemRequestDTO, add));
             } catch (FailedValidationException e) {
                 return cartItemMapper.toResponseDTO(cart.getItems());
             }
@@ -152,7 +153,7 @@ public class CartItemService {
     }
 
     @Transactional
-    public CartItemResponseDTO save(Cart cart, CartItemRequestDTO cartItemRequestDTO) {
+    public CartItemResponseDTO save(Cart cart, CartItemRequestDTO cartItemRequestDTO, boolean add) {
 
         Variant variant = variantRepository.findById(cartItemRequestDTO.getVariantId()).orElseThrow(EntityNotFoundException::new);
 
@@ -167,7 +168,8 @@ public class CartItemService {
         // Check if there is an existing cart item (variant and optionally event are the same).
         for (CartItem existingCartItem : existingCartItems) {
             if (Objects.equals(existingCartItem.getVariant().getId(), cartItemRequestDTO.getVariantId())) {
-                if ((existingCartItem.getEventProductAmount() == null && cartItemRequestDTO.getEventProductAmountId() == null) || Objects.equals(Objects.requireNonNull(existingCartItem.getEventProductAmount()).getId(), cartItemRequestDTO.getEventProductAmountId())) {
+                if ((existingCartItem.getEventProductAmount() == null && cartItemRequestDTO.getEventProductAmountId() == null) ||
+                        Objects.equals(Objects.requireNonNull(existingCartItem.getEventProductAmount()).getId(), cartItemRequestDTO.getEventProductAmountId())) {
                     cartItemToSave = existingCartItem;
                 }
             }
@@ -180,11 +182,31 @@ public class CartItemService {
 
         // If no existing cart item found, create entity object to save
         if (cartItemToSave == null) {
-
             cartItemToSave = cartItemMapper.fromRequestDTO(cartItemRequestDTO);
             cartItemToSave.setVariant(variant);
             cartItemToSave.setCart(cart);
+
             if (amount.multiply(stockMultiplier).add(subTotal).compareTo(amountLeft) > 0) {
+                Map<String, List<String>> errors = new HashMap<>();
+                List<String> messages = new ArrayList<>();
+                messages.add("Amount not in stock");
+                errors.put("amount", messages);
+                // We don't want to save cartItem, so we throw exception
+                throw new FailedValidationException(errors);
+            }
+
+        } else {
+            // Check if the total amount (new amount plus stock multiplier and subtotals) is within stock limits
+            if (amount.multiply(stockMultiplier).add(subTotal).compareTo(amountLeft) <= 0) {
+                if (add) {
+                    // If 'add' is true, sum the existing amount and the requested amount
+                    cartItemToSave.setAmount(cartItemToSave.getAmount() + cartItemRequestDTO.getAmount());
+                } else {
+                    // If 'add' is false, take the maximum of the existing amount and the requested amount
+                    cartItemToSave.setAmount(Math.max(cartItemToSave.getAmount(), cartItemRequestDTO.getAmount()));
+                }
+            } else {
+                // If the total amount exceeds available stock, throw an exception
                 Map<String, List<String>> errors = new HashMap<>();
                 List<String> messages = new ArrayList<>();
                 messages.add("Amount not in stock");
@@ -192,18 +214,12 @@ public class CartItemService {
                 throw new FailedValidationException(errors);
             }
 
-
-        } else {
-
-            if (amount.multiply(stockMultiplier).add(subTotal).compareTo(amountLeft) <= 0) {
-                // If the item already exists in the map, sum up the amount
-                cartItemToSave.setAmount(cartItemToSave.getAmount() + cartItemRequestDTO.getAmount());
-            }
-
         }
 
+        // Save and return response
         return cartItemMapper.toResponseDTO(cartItemRepository.save(cartItemToSave));
     }
+
 
     @Transactional
     public void deleteById(Integer id) {

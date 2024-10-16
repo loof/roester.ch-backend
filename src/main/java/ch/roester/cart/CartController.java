@@ -64,9 +64,15 @@ public class CartController {
     }
 
     @PostMapping("{id}/items")
-    public ResponseEntity<CartResponseDTO> createCartItems(@RequestBody @Valid CartItemRequestDTO[] cartItemRequestDTOS, @PathVariable("id") Integer cartId) {
+    public ResponseEntity<CartResponseDTO> createCartItems(
+            @RequestBody @Valid CartItemRequestDTO[] cartItemRequestDTOS,
+            @PathVariable("id") Integer cartId,
+            @RequestParam(name = "add", defaultValue = "false") boolean add) {  // Get the 'add' query parameter
+
         try {
-            Set<CartItemResponseDTO> savedCartItems = cartItemService.saveAll(cartId, cartItemRequestDTOS);
+            // Call the service to save all cart items, passing the 'add' parameter
+            Set<CartItemResponseDTO> savedCartItems = cartItemService.saveAll(cartId, cartItemRequestDTOS, add);
+
             if (!savedCartItems.isEmpty()) {
                 CartResponseDTO cartResponseDTO = cartService.findById(cartId);
                 return ResponseEntity.status(HttpStatus.CREATED).body(cartResponseDTO);
@@ -77,6 +83,7 @@ public class CartController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart item could not be created");
         }
     }
+
 
     @PatchMapping("{cartId}/items/{itemId}")
     public ResponseEntity<CartItemRequestDTO> update(@Valid @RequestBody CartItemRequestDTO cartItemRequestDTO, @PathVariable("cartId") Integer cartId, @PathVariable("itemId") Integer itemId) {
