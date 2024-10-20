@@ -18,7 +18,6 @@ import java.util.List;
 public interface AppUserMapper extends EntityMapper<AppUserRequestDTO, AppUserResponseDTO, AppUser> {
 
     @Override
-    @Mapping(target = "password", source = "password", ignore = true)
     AppUserResponseDTO toResponseDTO(AppUser appUser);
 
 }

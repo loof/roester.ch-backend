@@ -124,7 +124,7 @@ public class AppUserService {
             if (StringUtils.isNotBlank(changing.getEmail())) {
                 existing.setEmail(changing.getEmail());
             } else {
-                errors.put("username", List.of("Username must not be empty."));
+                errors.put("email", List.of("Username must not be empty."));
             }
         }
 
