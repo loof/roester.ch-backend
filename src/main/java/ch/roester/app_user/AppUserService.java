@@ -10,6 +10,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.AccessDeniedException;
@@ -71,6 +72,8 @@ public class AppUserService {
     public AppUserResponseDTO update(Integer id, AppUserRequestDTO changing) {
         AppUser existing = appUserRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         mergeAppUsers(existing, appUserMapper.fromRequestDTO(changing));
+        BeanUtils.copyProperties(changing, existing);
+        BeanUtils.copyProperties(changing.getLocation(), existing.getLocation());
         return appUserMapper.toResponseDTO(appUserRepository.save(existing));
     }
 
