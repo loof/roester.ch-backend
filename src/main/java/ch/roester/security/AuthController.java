@@ -1,10 +1,8 @@
 package ch.roester.security;
 
 import ch.roester.app_user.AppUser;
-import ch.roester.app_user.AppUserService;
-import ch.roester.cart.Cart;
-import ch.roester.cart.CartRequestDTO;
-import ch.roester.cart.CartResponseDTO;
+import ch.roester.app_user.AppUserMapper;
+import ch.roester.app_user.AppUserRequestDTO;
 import ch.roester.cart.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,7 +20,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.UnsupportedEncodingException;
@@ -34,18 +31,20 @@ import java.util.Map;
 public class AuthController {
     public static final String PATH = "/auth";
 
-    private final AppUserService appUserService;
+    private final AuthService authService;
     private final AuthenticationManager authenticationManager;
+    private final AppUserMapper appUserMapper;
 
-    public AuthController(AppUserService appUserService, AuthenticationManager authenticationManager, CartService cartService) {
-        this.appUserService = appUserService;
+    public AuthController(AuthService authService, AuthenticationManager authenticationManager, CartService cartService, AppUserMapper appUserMapper) {
+        this.authService = authService;
         this.authenticationManager = authenticationManager;
+        this.appUserMapper = appUserMapper;
     }
 
     @GetMapping("/verify")
     public ResponseEntity<?> verifyUser(@Param("code") String code) {
         Map<String, Object> response = new HashMap<>();
-        if (appUserService.verify(code)) {
+        if (authService.verify(code)) {
             response.put("success", true);
         } else {
             response.put("success", false);
@@ -59,19 +58,18 @@ public class AuthController {
     @Operation(summary = "Create a new user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User was created successfully",
-                    content = @Content(schema = @Schema(implementation = AuthResponseDTO.class))),
+                    content = @Content(schema = @Schema(implementation = SignupResponseDTO.class))),
             @ApiResponse(responseCode = "409", description = "User could not be created, username already in use",
                     content = @Content)
     })
     @SecurityRequirements //no security here, default is BEARER
     public ResponseEntity<?> signUp(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The user to register")
-            @Valid @RequestBody SignupRequestDTO newAuthDTO
+            @Valid @RequestBody SignupRequestDTO signupRequestDTO
     ) {
         try {
-            AppUser newAuth = AuthMapper.fromRequestDTO(newAuthDTO);
-            AppUser savedAuth = appUserService.create(newAuth);
-            return ResponseEntity.status(201).body(AuthMapper.toResponseDTO(savedAuth));
+            SignupResponseDTO savedUser = authService.create(signupRequestDTO);
+            return ResponseEntity.status(201).body(savedUser);
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User could not be created, username already in use");
         } catch (MessagingException | UnsupportedEncodingException e) {
@@ -97,7 +95,7 @@ public class AuthController {
         Authentication token = new UsernamePasswordAuthenticationToken(email, password);
 
         if (authenticationManager.authenticate(token).isAuthenticated()) {
-            AppUser user = appUserService.findByEmail(email);
+            AppUser user = authService.findByEmail(email);
 
             String jwt = JwtGenerator.generateJwtToken(email);
             return ResponseEntity.ok(new JwtResponseDTO(jwt, email, user.getId(), user.getCart().getId()));

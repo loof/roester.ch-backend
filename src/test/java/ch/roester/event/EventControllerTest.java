@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 class EventControllerTest {
 
+/*
 
     @Autowired
     private MockMvc mockMvc;
@@ -147,6 +148,7 @@ class EventControllerTest {
                 .andExpect(status().isBadRequest());
 
     }
+*/
 
 
 

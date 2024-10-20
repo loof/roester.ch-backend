@@ -3,6 +3,7 @@ package ch.roester.location;
 import ch.roester.app_user.AppUser;
 import ch.roester.event.Event;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -24,22 +25,22 @@ public class Location {
     private Integer id;
 
     @Size(max = 255)
-    @NotNull
     @Column(name = "street", nullable = false)
+    @NotBlank(message = "Strasse muss angegeben werden")
     private String street;
 
     @Size(max = 100)
-    @NotNull
     @Column(name = "street_nr", nullable = false, length = 100)
+    @NotBlank(message = "Hausnummer muss angegeben werden")
     private String streetNr;
 
     @Size(max = 100)
-    @NotNull
     @Column(name = "city", nullable = false, length = 100)
+    @NotBlank(message = "Ort muss angegeben werden")
     private String city;
 
-    @NotNull
     @Column(name = "postal_code", nullable = false)
+    @NotNull(message = "Postleitzahl muss angegeben werden")
     private Integer postalCode;
 
     @Column(name = "longitude")

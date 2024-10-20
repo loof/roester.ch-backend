@@ -51,7 +51,11 @@ public class AppUser {
     @Column(name = "verification_code", length = 64)
     private String verificationCode;
 
+    @Column(name = "enabled")
     private boolean enabled;
+
+    @Column(name = "send_updates")
+    private boolean sendUpdates = false;
 
     @Column(name = "company_name")
     private String companyName;

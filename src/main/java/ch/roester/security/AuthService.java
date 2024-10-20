@@ -1,10 +1,12 @@
-package ch.roester.app_user;
+package ch.roester.security;
 
+import ch.roester.app_user.*;
 import ch.roester.cart.Cart;
 import ch.roester.cart.CartRepository;
 import ch.roester.exception.FailedValidationException;
+import ch.roester.location.Location;
+import ch.roester.location.LocationRepository;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,35 +14,43 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class AppUserService {
+public class AuthService {
 
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
     private final CartRepository cartRepository;
     private final AppUserMapper appUserMapper;
+    private final SignupMapper signupMapper;
+    private final LocationRepository locationRepository;
 
     @Autowired
-    public AppUserService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender, CartRepository cartRepository, AppUserMapper appUserMapper) {
+    public AuthService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender, CartRepository cartRepository, AppUserMapper appUserMapper, SignupMapper signupMapper, LocationRepository locationRepository) {
         this.appUserRepository = appUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailSender = mailSender;
         this.cartRepository = cartRepository;
         this.appUserMapper = appUserMapper;
+        this.signupMapper = signupMapper;
+        this.locationRepository = locationRepository;
     }
 
-    public AppUser create(AppUser appUser) throws MessagingException, UnsupportedEncodingException {
+    public SignupResponseDTO create(SignupRequestDTO signupRequestDTO) throws MessagingException, UnsupportedEncodingException {
+        AppUser appUser = signupMapper.fromRequestDTO(signupRequestDTO);
+
+        if (appUser.getLocation() != null) {
+            Location location = locationRepository.save(appUser.getLocation());
+            appUser.setLocation(location);
+        }
 
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         String randomCode = RandomStringUtils.random(64, true, true);
@@ -52,8 +62,8 @@ public class AppUserService {
         cartRepository.save(cart);
         //appUser.setEnabled(true);
         //sendVerificationEmail(appUser);
-
-        return appUserRepository.save(appUser);
+        AppUser savedAppUser = appUserRepository.save(appUser);
+        return signupMapper.toResponseDTO(savedAppUser);
     }
 
     public AppUser findByEmail(String email) {

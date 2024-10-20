@@ -18,7 +18,7 @@ public interface EntityMapper<REQ, RES, E> {
     List<RES> toResponseDTO(List<E> entityList);
 
     default Page<RES> toResponseDTO(Page<E> entityPages) {
-        return entityPages.map(entityPage -> toResponseDTO(entityPage));
+        return entityPages.map(this::toResponseDTO);
     }
 
 }
