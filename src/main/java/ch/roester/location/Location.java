@@ -30,9 +30,9 @@ public class Location {
     private String street;
 
     @Size(max = 100)
-    @Column(name = "street_nr", nullable = false, length = 100)
+    @Column(name = "street_number", nullable = false, length = 100)
     @NotBlank(message = "Hausnummer muss angegeben werden")
-    private String streetNr;
+    private String streetNumber;
 
     @Size(max = 100)
     @Column(name = "city", nullable = false, length = 100)
@@ -41,7 +41,7 @@ public class Location {
 
     @Column(name = "postal_code", nullable = false)
     @NotNull(message = "Postleitzahl muss angegeben werden")
-    private Integer postalCode;
+    private String postalCode;
 
     @Column(name = "longitude")
     private Double longitude;

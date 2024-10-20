@@ -12,10 +12,10 @@ import lombok.Setter;
 @Setter
 public class SignupRequestDTO {
 
-    @NotBlank(message = "Vorname muss angegeben werden")
+    private Integer id;
+
     private String firstname;
 
-    @NotBlank(message = "Nachname muss angegeben werden")
     private String lastname;
 
     @Email

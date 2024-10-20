@@ -15,13 +15,13 @@ public class LocationRequestDTO {
     private String street;
 
     @NotBlank
-    private String streetNr;
+    private String streetNumber;
 
     @NotBlank
     private String city;
 
     @NotNull
-    private Integer postalCode;
+    private String postalCode;
 
     private Double longitude;
     private Double latitude;

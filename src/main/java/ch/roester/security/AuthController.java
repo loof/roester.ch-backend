@@ -71,7 +71,7 @@ public class AuthController {
             SignupResponseDTO savedUser = authService.create(signupRequestDTO);
             return ResponseEntity.status(201).body(savedUser);
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "User could not be created, username already in use");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getCause().getMessage());
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User could not be created, there was a problem sending registration confirmation email");
         }

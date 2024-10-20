@@ -28,10 +28,10 @@ public class AppUser {
     @OneToOne(mappedBy = "user", optional = false)
     private Cart cart;
 
-    @Column(name = "firstname", nullable = false)
+    @Column(name = "firstname")
     private String firstname;
 
-    @Column(name = "lastname", nullable = false)
+    @Column(name = "lastname")
     private String lastname;
 
     @Size(max = 100)
