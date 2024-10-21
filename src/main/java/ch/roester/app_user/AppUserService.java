@@ -3,6 +3,8 @@ package ch.roester.app_user;
 import ch.roester.cart.Cart;
 import ch.roester.cart.CartRepository;
 import ch.roester.exception.FailedValidationException;
+import ch.roester.location.Location;
+import ch.roester.location.LocationRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
@@ -32,13 +34,16 @@ public class AppUserService {
     private final CartRepository cartRepository;
     private final AppUserMapper appUserMapper;
 
+    private final LocationRepository locationRepository;
+
     @Autowired
-    public AppUserService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender, CartRepository cartRepository, AppUserMapper appUserMapper) {
+    public AppUserService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender, CartRepository cartRepository, AppUserMapper appUserMapper, LocationRepository locationRepository) {
         this.appUserRepository = appUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailSender = mailSender;
         this.cartRepository = cartRepository;
         this.appUserMapper = appUserMapper;
+        this.locationRepository = locationRepository;
     }
 
     public AppUser create(AppUser appUser) throws MessagingException, UnsupportedEncodingException {
@@ -72,8 +77,12 @@ public class AppUserService {
     public AppUserResponseDTO update(Integer id, AppUserRequestDTO changing) {
         AppUser existing = appUserRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         mergeAppUsers(existing, appUserMapper.fromRequestDTO(changing));
-        BeanUtils.copyProperties(changing, existing);
-        BeanUtils.copyProperties(changing.getLocation(), existing.getLocation());
+
+        if (existing.getLocation()!= null && existing.getLocation().getId() == null) {
+            Location savedLocation = locationRepository.save(existing.getLocation());
+            existing.setLocation(savedLocation);
+        }
+
         return appUserMapper.toResponseDTO(appUserRepository.save(existing));
     }
 
@@ -123,14 +132,16 @@ public class AppUserService {
     private void mergeAppUsers(AppUser existing, AppUser changing) {
         Map<String, List<String>> errors = new HashMap<>();
 
+        // Update email if not null and valid
         if (changing.getEmail() != null) {
             if (StringUtils.isNotBlank(changing.getEmail())) {
                 existing.setEmail(changing.getEmail());
             } else {
-                errors.put("email", List.of("Username must not be empty."));
+                errors.put("email", List.of("Email must not be empty."));
             }
         }
 
+        // Update password if not null and valid
         if (changing.getPassword() != null) {
             if (StringUtils.isNotBlank(changing.getPassword())) {
                 String newPassword = passwordEncoder.encode(changing.getPassword());
@@ -140,8 +151,61 @@ public class AppUserService {
             }
         }
 
+        // Update first name if not null
+        if (changing.getFirstname() != null) {
+            existing.setFirstname(changing.getFirstname());
+        }
+
+        // Update last name if not null
+        if (changing.getLastname() != null) {
+            existing.setLastname(changing.getLastname());
+        }
+
+        // Update verificationCode if not null
+        if (changing.getVerificationCode() != null) {
+            existing.setVerificationCode(changing.getVerificationCode());
+        }
+
+        // Update enabled flag if provided (if it's a boolean, it will always have a value, but we check for changes)
+        existing.setEnabled(changing.isEnabled());
+
+        // Update sendUpdates flag if provided (similar for boolean)
+        existing.setSendUpdates(changing.isSendUpdates());
+
+        // Update companyName if not null
+        if (changing.getCompanyName() != null) {
+            existing.setCompanyName(changing.getCompanyName());
+        }
+
+        // Update location only if both existing and changing have non-null locations
+        if (existing.getLocation() != null && changing.getLocation() != null) {
+            mergeLocation(existing.getLocation(), changing.getLocation());
+        } else if (changing.getLocation() != null) {
+            // If the existing location is null but the new location isn't, set it
+            existing.setLocation(changing.getLocation());
+        }
+
+        // Validate and throw if errors exist
         if (!errors.isEmpty()) {
             throw new FailedValidationException(errors);
         }
     }
+
+    // Helper function to merge the location fields
+    private void mergeLocation(Location existingLocation, Location changingLocation) {
+        if (changingLocation.getStreet() != null) {
+            existingLocation.setStreet(changingLocation.getStreet());
+        }
+        if (changingLocation.getStreetNumber() != null) {
+            existingLocation.setStreetNumber(changingLocation.getStreetNumber());
+        }
+        if (changingLocation.getCity() != null) {
+            existingLocation.setCity(changingLocation.getCity());
+        }
+        if (changingLocation.getPostalCode() != null) {
+            existingLocation.setPostalCode(changingLocation.getPostalCode());
+        }
+    }
+
+
 }
