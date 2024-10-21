@@ -63,6 +63,24 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.5'
 
 	//annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen:6.3.1.Final")
+
+	// https://mvnrepository.com/artifact/com.itextpdf/layout
+	implementation group: 'com.itextpdf', name: 'layout', version: '8.0.5'
+// https://mvnrepository.com/artifact/com.itextpdf/barcodes
+	implementation group: 'com.itextpdf', name: 'barcodes', version: '8.0.5'
+
+	// https://mvnrepository.com/artifact/net.codecrete.qrbill/qrbill-generator
+	implementation group: 'net.codecrete.qrbill', name: 'qrbill-generator', version: '3.3.0'
+
+	// https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder
+	implementation group: 'org.apache.xmlgraphics', name: 'batik-transcoder', version: '1.18'
+
+	// https://mvnrepository.com/artifact/org.apache.avalon.framework/avalon-framework-api
+	implementation group: 'org.apache.avalon.framework', name: 'avalon-framework-api', version: '4.3.1'
+
+	implementation group: 'org.apache.xmlgraphics', name: 'fop', version: '2.10'
+
+
 }
 
 test {
