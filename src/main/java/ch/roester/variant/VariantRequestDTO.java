@@ -1,7 +1,5 @@
 package ch.roester.variant;
 
-import ch.roester.unit.UnitRequestDTO;
-import ch.roester.unit.UnitResponseDTO;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,53 +1,44 @@
 package ch.roester.order;
 
 import ch.roester.app_user.AppUser;
-import ch.roester.variant.Variant;
+import ch.roester.shipment.Shipment;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SourceType;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
 @Entity
+@Table(name = "order")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    protected Integer id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "app_user_id")
     private AppUser appUser;
 
+    @Column(name = "total_cost", precision = 10, scale = 2)
+    private BigDecimal totalCost;
+
+    @Column(name = "order_date", nullable = false)
+    private LocalDate orderDate;
+
+    @Enumerated(EnumType.STRING) // Store the enum as a string in the database
+    @Column(name = "status", nullable = false)
+    private OrderStatus status; // Use the OrderStatus enum
+
     @OneToMany(mappedBy = "order")
     private List<Position> positions;
 
-    @UpdateTimestamp
-    private Instant lastUpdatedOn;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Shipment> shipments; // Add the relationship to Shipment
 
-    @CreationTimestamp
-    private Instant createdOn;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return Objects.equals(id, order.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

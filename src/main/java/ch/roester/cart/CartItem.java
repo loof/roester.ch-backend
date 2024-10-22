@@ -1,15 +1,12 @@
 package ch.roester.cart;
-import ch.roester.app_user.AppUser;
-import ch.roester.event.Event;
+
 import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.variant.Variant;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Check;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter

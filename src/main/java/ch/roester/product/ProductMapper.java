@@ -1,13 +1,11 @@
 package ch.roester.product;
 
 import ch.roester.mapper.EntityMapper;
-import ch.roester.part.Part;
 import ch.roester.part.PartMapper;
 import ch.roester.property.PropertyMapper;
 import ch.roester.stock.Stock;
 import ch.roester.tag.Tag;
 import ch.roester.tag.TagMapper;
-import ch.roester.tag.TagResponseDTO;
 import ch.roester.unit.Unit;
 import ch.roester.unit.UnitMapper;
 import ch.roester.variant.VariantMapper;
@@ -16,9 +14,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Component

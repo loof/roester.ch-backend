@@ -2,7 +2,6 @@ package ch.roester.stock;
 
 import ch.roester.location.Location;
 import ch.roester.product.Product;
-import ch.roester.unit.Unit;
 import ch.roester.variant.Variant;
 import jakarta.persistence.*;
 import lombok.Getter;

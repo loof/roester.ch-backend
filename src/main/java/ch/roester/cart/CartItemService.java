@@ -1,6 +1,5 @@
 package ch.roester.cart;
 
-import ch.roester.event.Event;
 import ch.roester.event.EventRepository;
 import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.event_product_amount.EventProductAmountRepository;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

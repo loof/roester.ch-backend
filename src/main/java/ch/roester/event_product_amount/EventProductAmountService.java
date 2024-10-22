@@ -1,6 +1,5 @@
 package ch.roester.event_product_amount;
 
-import ch.roester.event.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;

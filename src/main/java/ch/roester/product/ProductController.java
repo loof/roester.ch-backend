@@ -1,6 +1,5 @@
 package ch.roester.product;
 
-import ch.roester.tag.TagResponseDTO;
 import ch.roester.tag.TagService;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,7 +21,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 
 @RequestMapping(ProductController.REQUEST_MAPPING)

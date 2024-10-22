@@ -3,6 +3,7 @@ package ch.roester.shipping_method;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 

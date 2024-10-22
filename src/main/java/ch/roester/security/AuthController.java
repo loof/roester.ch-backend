@@ -2,7 +2,6 @@ package ch.roester.security;
 
 import ch.roester.app_user.AppUser;
 import ch.roester.app_user.AppUserMapper;
-import ch.roester.app_user.AppUserRequestDTO;
 import ch.roester.cart.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

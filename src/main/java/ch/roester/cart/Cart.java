@@ -1,13 +1,10 @@
 package ch.roester.cart;
+
 import ch.roester.app_user.AppUser;
-import ch.roester.product.Product;
-import ch.roester.unit.Unit;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
 

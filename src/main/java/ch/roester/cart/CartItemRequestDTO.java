@@ -1,6 +1,5 @@
 package ch.roester.cart;
 
-import ch.roester.variant.VariantRequestDTO;
 import lombok.Getter;
 import lombok.Setter;
 

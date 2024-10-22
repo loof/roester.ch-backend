@@ -1,18 +1,13 @@
 package ch.roester.cart;
 
-import ch.roester.event.Event;
 import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.mapper.EntityMapper;
-import ch.roester.product.Product;
 import ch.roester.variant.Variant;
 import ch.roester.variant.VariantMapper;
-import ch.roester.variant.VariantResponseDTO;
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
 
 @Component
 @Mapper(componentModel = "spring", uses = VariantMapper.class)

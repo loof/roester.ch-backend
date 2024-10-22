@@ -1,13 +1,10 @@
 package ch.roester.event;
 
-import ch.roester.cart.CartItem;
-import ch.roester.cart.CartItemRequestDTO;
 import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.event_product_amount.EventProductAmountMapper;
 import ch.roester.location.Location;
 import ch.roester.location.LocationMapper;
 import ch.roester.mapper.EntityMapper;
-import ch.roester.product.Product;
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 

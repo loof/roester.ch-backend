@@ -5,7 +5,6 @@ import ch.roester.location.LocationMapper;
 import ch.roester.mapper.EntityMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring", uses = {LocationMapper.class})
 public interface SignupMapper extends EntityMapper<SignupRequestDTO, SignupResponseDTO, AppUser> {

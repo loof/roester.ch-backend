@@ -3,7 +3,6 @@ package ch.roester.product;
 import ch.roester.part.PartResponseDTO;
 import ch.roester.property.PropertyResponseDTO;
 import ch.roester.tag.TagResponseDTO;
-import ch.roester.unit.Unit;
 import ch.roester.unit.UnitResponseDTO;
 import ch.roester.variant.VariantResponseDTO;
 import lombok.Getter;

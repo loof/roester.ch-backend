@@ -1,13 +1,9 @@
 package ch.roester.variant;
 
-import ch.roester.event.Event;
-import ch.roester.event.EventResponseDTO;
-import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.mapper.EntityMapper;
 import ch.roester.product.Product;
 import ch.roester.unit.Unit;
 import ch.roester.unit.UnitMapper;
-import ch.roester.unit.UnitRequestDTO;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = UnitMapper.class)
