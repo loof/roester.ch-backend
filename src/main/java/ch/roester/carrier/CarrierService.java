@@ -14,7 +14,7 @@ public class CarrierService {
     private final CarrierMapper carrierMapper;
 
     @Autowired
-    public CarrierService(CarrierRepository carrierRepository, @Qualifier("carrierMapper") CarrierMapper carrierMapper) {
+    public CarrierService(CarrierRepository carrierRepository, CarrierMapper carrierMapper) {
         this.carrierRepository = carrierRepository;
         this.carrierMapper = carrierMapper;
     }
@@ -27,19 +27,19 @@ public class CarrierService {
         carrier.setEmail(carrierRequestDTO.getEmail());
         carrier.setWebsite(carrierRequestDTO.getWebsite());
         // Save the carrier and return the response DTO
-        return toResponseDTO(carrierRepository.save(carrier));
+        return carrierMapper.toResponseDTO(carrierRepository.save(carrier));
     }
 
     // Method to find all carriers with pagination, sorting, and optional search
     public Page<CarrierResponseDTO> findAll(Pageable pageable) {
-        return carrierRepository.findAll(pageable).map(this::toResponseDTO);
+        return carrierRepository.findAll(pageable).map(carrierMapper::toResponseDTO);
     }
 
     // Method to find a carrier by ID
     public CarrierResponseDTO findById(Integer id) {
         Carrier carrier = carrierRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Carrier not found"));
-        return toResponseDTO(carrier);
+        return carrierMapper.toResponseDTO(carrier);
     }
 
     // Method to update an existing carrier
@@ -52,7 +52,7 @@ public class CarrierService {
         carrier.setEmail(carrierRequestDTO.getEmail());
         carrier.setWebsite(carrierRequestDTO.getWebsite());
 
-        return toResponseDTO(carrierRepository.save(carrier));
+        return carrierMapper.toResponseDTO(carrierRepository.save(carrier));
     }
 
     // Method to delete a carrier by ID
@@ -60,14 +60,4 @@ public class CarrierService {
         carrierRepository.deleteById(id);
     }
 
-    // Method to convert Carrier to CarrierResponseDTO
-    private CarrierResponseDTO toResponseDTO(Carrier carrier) {
-        CarrierResponseDTO responseDTO = new CarrierResponseDTO();
-        responseDTO.setId(carrier.getId());
-        responseDTO.setName(carrier.getName());
-        responseDTO.setContactNumber(carrier.getContactNumber());
-        responseDTO.setEmail(carrier.getEmail());
-        responseDTO.setWebsite(carrier.getWebsite());
-        return responseDTO;
-    }
 }

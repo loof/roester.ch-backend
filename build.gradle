@@ -31,6 +31,7 @@ dependencies {
 	// open api documentation
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
+
 	// runtime only dependencies
 	runtimeOnly 'mysql:mysql-connector-java:8.0.33'
 
@@ -79,6 +80,9 @@ dependencies {
 	implementation group: 'org.apache.avalon.framework', name: 'avalon-framework-api', version: '4.3.1'
 
 	implementation group: 'org.apache.xmlgraphics', name: 'fop', version: '2.10'
+
+
+
 
 
 }
