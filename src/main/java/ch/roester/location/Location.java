@@ -1,6 +1,7 @@
 package ch.roester.location;
 
 import ch.roester.app_user.AppUser;
+import ch.roester.base_entity.BaseEntity;
 import ch.roester.event.Event;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +19,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "location")
-public class Location {
+public class Location extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

@@ -1,5 +1,6 @@
 package ch.roester.app_user;
 
+import ch.roester.base_entity.BaseEntity;
 import ch.roester.cart.Cart;
 import ch.roester.event.Event;
 import ch.roester.location.Location;
@@ -18,7 +19,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "app_user")
-public class AppUser {
+public class AppUser extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

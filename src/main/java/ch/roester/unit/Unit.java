@@ -1,5 +1,6 @@
 package ch.roester.unit;
 
+import ch.roester.base_entity.BaseEntity;
 import ch.roester.product.Product;
 import ch.roester.variant.Variant;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "unit")
-public class Unit {
+public class Unit extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

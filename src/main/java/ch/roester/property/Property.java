@@ -1,5 +1,6 @@
 package ch.roester.property;
 
+import ch.roester.base_entity.BaseEntity;
 import ch.roester.product.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -13,7 +14,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "property")
-public class Property {
+public class Property extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

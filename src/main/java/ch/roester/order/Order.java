@@ -1,6 +1,7 @@
 package ch.roester.order;
 
 import ch.roester.app_user.AppUser;
+import ch.roester.base_entity.BaseEntity;
 import ch.roester.shipment.Shipment;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,13 +9,14 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "order")
-public class Order {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +28,6 @@ public class Order {
 
     @Column(name = "total_cost", precision = 10, scale = 2)
     private BigDecimal totalCost;
-
-    @Column(name = "order_date", nullable = false)
-    private LocalDate orderDate;
 
     @Enumerated(EnumType.STRING) // Store the enum as a string in the database
     @Column(name = "status", nullable = false)

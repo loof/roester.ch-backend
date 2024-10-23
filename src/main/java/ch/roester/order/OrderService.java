@@ -42,7 +42,8 @@ public class OrderService {
     }
 
     public OrderResponseDTO save(OrderRequestDTO order) {
-        return orderMapper.toResponseDTO(orderRepository.save(orderMapper.fromRequestDTO(order)));
+        Order savedOrder = orderRepository.save(orderMapper.fromRequestDTO(order));
+        return orderMapper.toResponseDTO(savedOrder);
     }
 
     public void deleteById(Integer id) {

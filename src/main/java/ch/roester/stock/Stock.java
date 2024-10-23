@@ -1,5 +1,6 @@
 package ch.roester.stock;
 
+import ch.roester.base_entity.BaseEntity;
 import ch.roester.location.Location;
 import ch.roester.product.Product;
 import ch.roester.variant.Variant;
@@ -14,7 +15,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "stock")
-public class Stock {
+public class Stock extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,6 @@
 package ch.roester.shipment;
 
+import ch.roester.base_entity.BaseEntity;
 import ch.roester.carrier.Carrier;
 import ch.roester.order.Order;
 import ch.roester.shipping_method.ShippingMethod;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Table(name = "Shipment")
 @Getter
 @Setter
-public class Shipment {
+public class Shipment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

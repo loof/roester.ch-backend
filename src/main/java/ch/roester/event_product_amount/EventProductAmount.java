@@ -1,6 +1,7 @@
 package ch.roester.event_product_amount;
 
 
+import ch.roester.base_entity.BaseEntity;
 import ch.roester.event.Event;
 import ch.roester.product.Product;
 import jakarta.persistence.*;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "event_product_amount")
-public class EventProductAmount {
+public class EventProductAmount extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

@@ -1,5 +1,6 @@
 package ch.roester.shipping_method;
 
+import ch.roester.base_entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "shipping_method")
-public class ShippingMethod {
+public class ShippingMethod extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

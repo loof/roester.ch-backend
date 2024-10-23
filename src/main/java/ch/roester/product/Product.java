@@ -1,5 +1,6 @@
 package ch.roester.product;
 
+import ch.roester.base_entity.BaseEntity;
 import ch.roester.event_product_amount.EventProductAmount;
 import ch.roester.part.Part;
 import ch.roester.property.Property;
@@ -22,7 +23,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "product")
-public class Product {
+public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -69,12 +70,6 @@ public class Product {
 
     @Column(name = "price_per_unit")
     private BigDecimal pricePerUnit;
-
-    @Column(insertable = false)
-    private LocalDateTime createdAt;
-
-    @Column(insertable = false)
-    private LocalDateTime updatedAt;
 
     @Override
     public boolean equals(Object o) {
