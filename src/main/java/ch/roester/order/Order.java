@@ -8,14 +8,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "order")
+@Table(name = "orders") // Changed to "orders" to avoid conflict with SQL reserved keywords
 public class Order extends BaseEntity {
 
     @Id
@@ -29,15 +28,15 @@ public class Order extends BaseEntity {
     @Column(name = "total_cost", precision = 10, scale = 2)
     private BigDecimal totalCost;
 
-    @Enumerated(EnumType.STRING) // Store the enum as a string in the database
-    @Column(name = "status", nullable = false)
-    private OrderStatus status; // Use the OrderStatus enum
+    // Updated to use the Status entity instead of an enum
+    @ManyToOne
+    @JoinColumn(name = "status_id", nullable = false)
+    private Status status; // Relationship to Status entity
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Position> positions;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<Shipment> shipments; // Add the relationship to Shipment
-
 
 }
