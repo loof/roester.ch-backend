@@ -65,9 +65,12 @@ public class OrderService {
             }
         }
 
-
-
-
+        Optional<Status> existingStatus = statusRepository.getFirstByName(order.getStatus().getName());
+        if (existingStatus.isPresent()) {
+            order.setStatus(existingStatus.get());
+        } else {
+            statusRepository.save(order.getStatus());
+        }
 
         // Persist the order and its associated positions
         Order savedOrder = orderRepository.save(order); // This will cascade to positions if configured

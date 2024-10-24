@@ -34,10 +34,6 @@ public class Position {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @ManyToOne
-    @JoinColumn(name = "status_id", nullable = false)
-    private Status status;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

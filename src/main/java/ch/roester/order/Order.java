@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "orders") // Changed to "orders" to avoid conflict with SQL reserved keywords
+@Table(name = "order") // Changed to "orders" to avoid conflict with SQL reserved keywords
 public class Order extends BaseEntity {
 
     @Id
@@ -30,7 +30,8 @@ public class Order extends BaseEntity {
 
     // Updated to use the Status entity instead of an enum
     @ManyToOne
-    @JoinColumn(name = "status_id", nullable = false)
+    @JoinColumn(name = "status", nullable = false, unique = true)
+    @Enumerated(value = EnumType.STRING)
     private Status status; // Relationship to Status entity
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -38,5 +39,10 @@ public class Order extends BaseEntity {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<Shipment> shipments; // Add the relationship to Shipment
+
+    public Order() {
+        this.status = new Status();
+        this.status.setName(OrderStatus.WAITING_FOR_PAYMENT.toString());
+    }
 
 }
