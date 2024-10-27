@@ -8,7 +8,6 @@ import java.util.List;
 @Getter
 @Setter
 public class OrderRequestDTO {
-    private Integer id;
     private Integer appUserId;
     private List<PositionRequestDTO> positions;
 }

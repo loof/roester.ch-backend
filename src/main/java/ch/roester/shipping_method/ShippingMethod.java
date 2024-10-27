@@ -8,7 +8,6 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-
 @Getter
 @Setter
 @Entity
@@ -25,12 +24,23 @@ public class ShippingMethod extends BaseEntity {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "estimated_delivery_time ")
+    @Column(name = "estimated_delivery_time")
     private String estimatedDeliveryTime;
 
     @Column(name = "description")
     private String description;
 
+    @Column(name = "weight_in_grams_limit", nullable = false)
+    private Integer weightInGramsLimit;
+
+    @Column(name = "inner_width_in_cm", nullable = false)
+    private BigDecimal innerWidthInCm;
+
+    @Column(name = "inner_height_in_cm", nullable = false)
+    private BigDecimal innerHeightInCm;
+
+    @Column(name = "inner_depth_in_cm", nullable = false)
+    private BigDecimal innerDepthInCm;
 
     @Override
     public boolean equals(Object o) {
@@ -42,6 +52,6 @@ public class ShippingMethod extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id);
     }
 }

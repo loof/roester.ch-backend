@@ -1,5 +1,9 @@
 package ch.roester.order;
 
+import ch.roester.shipping_method.ShippingMethod;
+import ch.roester.shipping_method.ShippingMethodRepository;
+import ch.roester.variant.Variant;
+import ch.roester.variant.VariantRepository;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -15,7 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -26,10 +33,14 @@ public class OrderController {
 
     public static final String REQUEST_MAPPING = "/orders";
     private final OrderService orderService;
+    private final VariantRepository variantRepository;
+    private final ShippingMethodRepository shippingMethodRepository;
 
     @Autowired
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, VariantRepository variantRepository, ShippingMethodRepository shippingMethodRepository) {
         this.orderService = orderService;
+        this.variantRepository = variantRepository;
+        this.shippingMethodRepository = shippingMethodRepository;
     }
 
     @PostMapping
@@ -86,6 +97,11 @@ public class OrderController {
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
         }
+    }
+
+    @PostMapping("/calculate-total")
+    public OrderResponseDTO calculateOrderTotal(@RequestBody List<PositionRequestDTO> positions) {
+        return orderService.calculateOrderTotal(positions);
     }
 
 }

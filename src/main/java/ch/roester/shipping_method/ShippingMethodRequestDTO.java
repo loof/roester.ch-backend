@@ -20,4 +20,6 @@ public class ShippingMethodRequestDTO {
 
     private String description;
 
+    private Integer weightInGramsLimit;
+
 }

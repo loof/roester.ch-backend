@@ -51,6 +51,15 @@ public class Variant extends BaseEntity {
     @Column(name = "weight_in_grams", nullable = false)
     private BigDecimal weightInGrams;
 
+    @Column(name = "width_in_cm", nullable = false)
+    private BigDecimal widthInCm;
+
+    @Column(name = "height_in_cm", nullable = false)
+    private BigDecimal heightInCm;
+
+    @Column(name = "depth_in_cm", nullable = false)
+    private BigDecimal depthInCm;
+
     @Column(name = "active", nullable = false)
     private boolean active = true;
 

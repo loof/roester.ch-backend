@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @Entity
 @EntityListeners(OrderEntityListener.class)
-@Table(name = "order")
+@Table(name = "orders")
 public class Order extends BaseEntity {
 
     @Id
@@ -32,7 +32,7 @@ public class Order extends BaseEntity {
 
     // Updated to use the Status entity instead of an enum
     @ManyToOne
-    @JoinColumn(name = "status", nullable = false)
+    @JoinColumn(name = "status_id", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Status status; // Relationship to Status entity
 
