@@ -1,8 +1,6 @@
 package ch.roester.order;
 
-import ch.roester.shipping_method.ShippingMethod;
 import ch.roester.shipping_method.ShippingMethodRepository;
-import ch.roester.variant.Variant;
 import ch.roester.variant.VariantRepository;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
