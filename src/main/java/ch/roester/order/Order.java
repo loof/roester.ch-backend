@@ -14,12 +14,14 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "order") // Changed to "orders" to avoid conflict with SQL reserved keywords
+@EntityListeners(OrderEntityListener.class)
+@Table(name = "order")
 public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "id", nullable = false)
+    protected Integer id;
 
     @ManyToOne
     @JoinColumn(name = "app_user_id")
@@ -30,7 +32,7 @@ public class Order extends BaseEntity {
 
     // Updated to use the Status entity instead of an enum
     @ManyToOne
-    @JoinColumn(name = "status", nullable = false, unique = true)
+    @JoinColumn(name = "status", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Status status; // Relationship to Status entity
 
@@ -38,7 +40,7 @@ public class Order extends BaseEntity {
     private List<Position> positions;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<Shipment> shipments; // Add the relationship to Shipment
+    private List<Shipment> shipments;
 
     public Order() {
         this.status = new Status();

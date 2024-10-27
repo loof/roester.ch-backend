@@ -16,6 +16,7 @@ public class VariantRequestDTO {
     private Integer displayUnitId;
     private BigDecimal price;
     private BigDecimal stockMultiplier;
+    private String separateShipmentComment;
 
     public VariantRequestDTO() {
     }

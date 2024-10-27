@@ -48,6 +48,18 @@ public class Variant extends BaseEntity {
     @Column(name = "amount_in_stock")
     private Double amountInStock;
 
+    @Column(name = "weight_in_grams", nullable = false)
+    private BigDecimal weightInGrams;
+
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
+
+    @Column(name = "is_separate_shipment", nullable = false)
+    private boolean isSeparateShipment = false;
+
+    @Column(name = "separate_shipment_comment")
+    private String separateShipmentComment;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
