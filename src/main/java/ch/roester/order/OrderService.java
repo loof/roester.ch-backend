@@ -2,12 +2,12 @@ package ch.roester.order;
 
 import ch.roester.exception.FailedValidationException;
 import ch.roester.shipment.Shipment;
+import ch.roester.shipment.ShipmentMapper;
 import ch.roester.shipping_method.ShippingMethod;
 import ch.roester.shipping_method.ShippingMethodRepository;
 import ch.roester.variant.Variant;
 import ch.roester.variant.VariantRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +31,17 @@ public class OrderService {
     private final PositionRepository positionRepository;
     private final StatusRepository statusRepository;
     private final ShippingMethodRepository shippingMethodRepository;
+    private final ShipmentMapper shippmentMapper;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper, VariantRepository variantRepository, PositionRepository positionRepository, StatusRepository statusRepository, ShippingMethodRepository shippingMethodRepository) {
+    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper, VariantRepository variantRepository, PositionRepository positionRepository, StatusRepository statusRepository, ShippingMethodRepository shippingMethodRepository, ShipmentMapper shippmentMapper) {
         this.orderMapper = orderMapper;
         this.orderRepository = orderRepository;
         this.variantRepository = variantRepository;
         this.positionRepository = positionRepository;
         this.statusRepository = statusRepository;
         this.shippingMethodRepository = shippingMethodRepository;
+        this.shippmentMapper = shippmentMapper;
     }
 
     public Page<OrderResponseDTO> findAll(Pageable pageable) {
@@ -88,7 +90,7 @@ public class OrderService {
         return orderMapper.toResponseDTO(savedOrder);
     }
 
-    public OrderResponseDTO calculateOrderTotal(List<PositionRequestDTO> positions) {
+    public OrderResponseDTO calculateShipmentsFromPositions(List<PositionRequestDTO> positions) {
         List<ShippingMethod> shippingMethods = shippingMethodRepository.findAll();
         List<Variant> variants = new ArrayList<>();
 
@@ -100,15 +102,20 @@ public class OrderService {
             }
         }
 
-        BigDecimal lowestCost = calculateLowestShippingCost(variants, shippingMethods);
-        OrderResponseDTO responseDTO = new OrderResponseDTO();
-        responseDTO.setTotalShippingCost(lowestCost);
-        responseDTO.setNumberOfParcels(calculateNumberOfParcels(variants, shippingMethods));
-        return responseDTO;
+        List<Shipment> returnedShipments = calculateShipments(variants, shippingMethods);
+
+        OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
+        orderResponseDTO.setShipments(shippmentMapper.toResponseDTO(returnedShipments));
+        orderResponseDTO.setTotalShippingCost(returnedShipments.stream()
+                .map(Shipment::getShipmentCost)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        orderResponseDTO.setNumberOfParcels(returnedShipments.size());
+
+        return orderResponseDTO;
     }
 
-    private BigDecimal calculateLowestShippingCost(List<Variant> variants, List<ShippingMethod> shippingMethods) {
-        BigDecimal totalCost = BigDecimal.ZERO;
+    private List<Shipment> calculateShipments(List<Variant> variants, List<ShippingMethod> shippingMethods) {
+        List<Shipment> shipments = new ArrayList<>();
         BigDecimal currentWeight = BigDecimal.ZERO;
         BigDecimal maxWeightLimit = shippingMethods.stream()
                 .map(ShippingMethod::getWeightInGramsLimit)
@@ -118,10 +125,18 @@ public class OrderService {
         for (Variant variant : variants) {
             BigDecimal variantWeight = variant.getWeightInGrams();
             if (variant.isSeparateShipment()) {
-                totalCost = totalCost.add(findCheapestShippingMethod(shippingMethods, variantWeight).getPrice());
+                ShippingMethod method = findCheapestShippingMethod(shippingMethods, variantWeight);
+                Shipment shipment = new Shipment();
+                shipment.setShippingMethod(method);
+                shipment.setShipmentCost(method.getPrice());
+                shipments.add(shipment);
             } else {
                 if (currentWeight.add(variantWeight).compareTo(maxWeightLimit) > 0) {
-                    totalCost = totalCost.add(findCheapestShippingMethod(shippingMethods, currentWeight).getPrice());
+                    ShippingMethod method = findCheapestShippingMethod(shippingMethods, currentWeight);
+                    Shipment shipment = new Shipment();
+                    shipment.setShippingMethod(method);
+                    shipment.setShipmentCost(method.getPrice());
+                    shipments.add(shipment);
                     currentWeight = BigDecimal.ZERO;
                 }
                 currentWeight = currentWeight.add(variantWeight);
@@ -129,38 +144,14 @@ public class OrderService {
         }
 
         if (currentWeight.compareTo(BigDecimal.ZERO) > 0) {
-            totalCost = totalCost.add(findCheapestShippingMethod(shippingMethods, currentWeight).getPrice());
+            ShippingMethod method = findCheapestShippingMethod(shippingMethods, currentWeight);
+            Shipment shipment = new Shipment();
+            shipment.setShippingMethod(method);
+            shipment.setShipmentCost(method.getPrice());
+            shipments.add(shipment);
         }
 
-        return totalCost;
-    }
-
-    private int calculateNumberOfParcels(List<Variant> variants, List<ShippingMethod> shippingMethods) {
-        int numberOfParcels = 0;
-        BigDecimal currentWeight = BigDecimal.ZERO;
-        BigDecimal maxWeightLimit = shippingMethods.stream()
-                .map(ShippingMethod::getWeightInGramsLimit)
-                .max(BigDecimal::compareTo)
-                .orElse(BigDecimal.ZERO);
-
-        for (Variant variant : variants) {
-            BigDecimal variantWeight = variant.getWeightInGrams();
-            if (variant.isSeparateShipment()) {
-                numberOfParcels++;
-            } else {
-                if (currentWeight.add(variantWeight).compareTo(maxWeightLimit) > 0) {
-                    numberOfParcels++;
-                    currentWeight = BigDecimal.ZERO;
-                }
-                currentWeight = currentWeight.add(variantWeight);
-            }
-        }
-
-        if (currentWeight.compareTo(BigDecimal.ZERO) > 0) {
-            numberOfParcels++;
-        }
-
-        return numberOfParcels;
+        return shipments;
     }
 
     private ShippingMethod findCheapestShippingMethod(List<ShippingMethod> shippingMethods, BigDecimal weight) {
