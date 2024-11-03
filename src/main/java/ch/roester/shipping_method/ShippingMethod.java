@@ -31,7 +31,7 @@ public class ShippingMethod extends BaseEntity {
     private String description;
 
     @Column(name = "weight_in_grams_limit", nullable = false)
-    private Integer weightInGramsLimit;
+    private BigDecimal weightInGramsLimit;
 
     @Column(name = "inner_width_in_cm", nullable = false)
     private BigDecimal innerWidthInCm;

@@ -1,23 +1,25 @@
 package ch.roester.order;
 
 import ch.roester.exception.FailedValidationException;
+import ch.roester.shipment.Shipment;
 import ch.roester.shipping_method.ShippingMethod;
 import ch.roester.shipping_method.ShippingMethodRepository;
 import ch.roester.variant.Variant;
 import ch.roester.variant.VariantRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jdk.jshell.spi.ExecutionControl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -87,60 +89,85 @@ public class OrderService {
     }
 
     public OrderResponseDTO calculateOrderTotal(List<PositionRequestDTO> positions) {
-        BigDecimal totalCost = BigDecimal.ZERO;
-        BigDecimal totalShippingCost = BigDecimal.ZERO;
-        BigDecimal weightSum = BigDecimal.ZERO;
-        BigDecimal totalWidth = BigDecimal.ZERO;
-        BigDecimal totalHeight = BigDecimal.ZERO;
-        BigDecimal totalDepth = BigDecimal.ZERO;
-        int numberOfParcels = 0;
+        List<ShippingMethod> shippingMethods = shippingMethodRepository.findAll();
+        List<Variant> variants = new ArrayList<>();
 
         for (PositionRequestDTO position : positions) {
-            Variant variant = variantRepository.findById(position.getVariantId()).orElseThrow(() -> new RuntimeException("Variant not found"));
-            BigDecimal positionCost = variant.getStockMultiplier()
-                    .multiply(variant.getProduct().getPricePerUnit())
-                    .multiply(new BigDecimal(position.getAmount()));
-            totalCost = totalCost.add(positionCost);
-
-            if (variant.isSeparateShipment()) {
-                BigDecimal shippingCost = calculateShippingCost(variant.getWeightInGrams(), variant.getWidthInCm(), variant.getHeightInCm(), variant.getDepthInCm());
-                totalShippingCost = totalShippingCost.add(shippingCost.multiply(new BigDecimal(position.getAmount())));
-                numberOfParcels += position.getAmount();
-            } else {
-                weightSum = weightSum.add(variant.getWeightInGrams().multiply(new BigDecimal(position.getAmount())));
-                totalWidth = totalWidth.add(variant.getWidthInCm().multiply(new BigDecimal(position.getAmount())));
-                totalHeight = totalHeight.add(variant.getHeightInCm().multiply(new BigDecimal(position.getAmount())));
-                totalDepth = totalDepth.add(variant.getDepthInCm().multiply(new BigDecimal(position.getAmount())));
+            Variant variant = variantRepository.findById(position.getVariantId())
+                    .orElseThrow(() -> new EntityNotFoundException("Variant not found"));
+            for (int i = 0; i < position.getAmount(); i++) {
+                variants.add(variant);
             }
         }
 
-        if (weightSum.compareTo(BigDecimal.ZERO) > 0) {
-            totalShippingCost = totalShippingCost.add(calculateShippingCost(weightSum, totalWidth, totalHeight, totalDepth));
+        BigDecimal lowestCost = calculateLowestShippingCost(variants, shippingMethods);
+        OrderResponseDTO responseDTO = new OrderResponseDTO();
+        responseDTO.setTotalShippingCost(lowestCost);
+        responseDTO.setNumberOfParcels(calculateNumberOfParcels(variants, shippingMethods));
+        return responseDTO;
+    }
+
+    private BigDecimal calculateLowestShippingCost(List<Variant> variants, List<ShippingMethod> shippingMethods) {
+        BigDecimal totalCost = BigDecimal.ZERO;
+        BigDecimal currentWeight = BigDecimal.ZERO;
+        BigDecimal maxWeightLimit = shippingMethods.stream()
+                .map(ShippingMethod::getWeightInGramsLimit)
+                .max(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        for (Variant variant : variants) {
+            BigDecimal variantWeight = variant.getWeightInGrams();
+            if (variant.isSeparateShipment()) {
+                totalCost = totalCost.add(findCheapestShippingMethod(shippingMethods, variantWeight).getPrice());
+            } else {
+                if (currentWeight.add(variantWeight).compareTo(maxWeightLimit) > 0) {
+                    totalCost = totalCost.add(findCheapestShippingMethod(shippingMethods, currentWeight).getPrice());
+                    currentWeight = BigDecimal.ZERO;
+                }
+                currentWeight = currentWeight.add(variantWeight);
+            }
+        }
+
+        if (currentWeight.compareTo(BigDecimal.ZERO) > 0) {
+            totalCost = totalCost.add(findCheapestShippingMethod(shippingMethods, currentWeight).getPrice());
+        }
+
+        return totalCost;
+    }
+
+    private int calculateNumberOfParcels(List<Variant> variants, List<ShippingMethod> shippingMethods) {
+        int numberOfParcels = 0;
+        BigDecimal currentWeight = BigDecimal.ZERO;
+        BigDecimal maxWeightLimit = shippingMethods.stream()
+                .map(ShippingMethod::getWeightInGramsLimit)
+                .max(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        for (Variant variant : variants) {
+            BigDecimal variantWeight = variant.getWeightInGrams();
+            if (variant.isSeparateShipment()) {
+                numberOfParcels++;
+            } else {
+                if (currentWeight.add(variantWeight).compareTo(maxWeightLimit) > 0) {
+                    numberOfParcels++;
+                    currentWeight = BigDecimal.ZERO;
+                }
+                currentWeight = currentWeight.add(variantWeight);
+            }
+        }
+
+        if (currentWeight.compareTo(BigDecimal.ZERO) > 0) {
             numberOfParcels++;
         }
 
-        BigDecimal orderTotal = totalCost.add(totalShippingCost);
-
-        OrderResponseDTO response = new OrderResponseDTO();
-        response.setTotalCost(totalCost);
-        response.setTotalShippingCost(totalShippingCost);
-        response.setOrderTotal(orderTotal);
-        response.setNumberOfParcels(numberOfParcels); // Set the number of parcels
-
-        return response;
+        return numberOfParcels;
     }
 
-    private BigDecimal calculateShippingCost(BigDecimal weight, BigDecimal width, BigDecimal height, BigDecimal depth) {
-        List<ShippingMethod> shippingMethods = shippingMethodRepository.findAllByOrderByWeightInGramsLimitAsc();
-        for (ShippingMethod method : shippingMethods) {
-            if (weight.compareTo(new BigDecimal(method.getWeightInGramsLimit())) <= 0 &&
-                    width.compareTo(method.getInnerWidthInCm()) <= 0 &&
-                    height.compareTo(method.getInnerHeightInCm()) <= 0 &&
-                    depth.compareTo(method.getInnerDepthInCm()) <= 0) {
-                return method.getPrice();
-            }
-        }
-        throw new FailedValidationException(Map.of("shippingMethod", List.of("No suitable shipping method found for the given weight and dimensions.")));
+    private ShippingMethod findCheapestShippingMethod(List<ShippingMethod> shippingMethods, BigDecimal weight) {
+        return shippingMethods.stream()
+                .filter(method -> method.getWeightInGramsLimit().compareTo(weight) >= 0)
+                .min(Comparator.comparing(ShippingMethod::getPrice))
+                .orElseThrow(() -> new EntityNotFoundException("No suitable shipping methods available"));
     }
 
     public void deleteById(Integer id) {
