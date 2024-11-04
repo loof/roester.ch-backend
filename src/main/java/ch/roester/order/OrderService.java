@@ -93,23 +93,29 @@ public class OrderService {
     public OrderResponseDTO calculateShipmentsFromPositions(List<PositionRequestDTO> positions) {
         List<ShippingMethod> shippingMethods = shippingMethodRepository.findAll();
         List<Variant> variants = new ArrayList<>();
+        BigDecimal totalVariantCost = BigDecimal.ZERO;
 
         for (PositionRequestDTO position : positions) {
             Variant variant = variantRepository.findById(position.getVariantId())
                     .orElseThrow(() -> new EntityNotFoundException("Variant not found"));
             for (int i = 0; i < position.getAmount(); i++) {
                 variants.add(variant);
+                totalVariantCost = totalVariantCost.add(variant.getStockMultiplier().multiply(variant.getProduct().getPricePerUnit()));
             }
         }
 
         List<Shipment> returnedShipments = calculateShipments(variants, shippingMethods);
 
         OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
+        orderResponseDTO.setPositions(positions);
         orderResponseDTO.setShipments(shippmentMapper.toResponseDTO(returnedShipments));
-        orderResponseDTO.setTotalShippingCost(returnedShipments.stream()
+        BigDecimal totalShippingCost = returnedShipments.stream()
                 .map(Shipment::getShipmentCost)
-                .reduce(BigDecimal.ZERO, BigDecimal::add));
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        orderResponseDTO.setTotalShippingCost(totalShippingCost);
         orderResponseDTO.setNumberOfParcels(returnedShipments.size());
+        orderResponseDTO.setOrderTotal(totalVariantCost);
+        orderResponseDTO.setTotalCost(totalVariantCost.add(totalShippingCost));
 
         return orderResponseDTO;
     }
