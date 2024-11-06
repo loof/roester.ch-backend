@@ -27,6 +27,9 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "app_user_id")
     private AppUser appUser;
 
+    @Column(name = "isPickup", nullable = false)
+    private boolean isPickup;
+
     @Column(name = "total_cost", precision = 10, scale = 2)
     private BigDecimal totalCost;
 

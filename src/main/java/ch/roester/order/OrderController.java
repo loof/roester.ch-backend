@@ -1,5 +1,7 @@
 package ch.roester.order;
 
+import ch.roester.app_user.AppUser;
+import ch.roester.app_user.AppUserRepository;
 import ch.roester.shipping_method.ShippingMethodRepository;
 import ch.roester.variant.VariantRepository;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,18 +35,27 @@ public class OrderController {
     private final OrderService orderService;
     private final VariantRepository variantRepository;
     private final ShippingMethodRepository shippingMethodRepository;
+    private final AppUserRepository appUserRepository;
 
     @Autowired
-    public OrderController(OrderService orderService, VariantRepository variantRepository, ShippingMethodRepository shippingMethodRepository) {
+    public OrderController(OrderService orderService, VariantRepository variantRepository, ShippingMethodRepository shippingMethodRepository, AppUserRepository appUserRepository) {
         this.orderService = orderService;
         this.variantRepository = variantRepository;
         this.shippingMethodRepository = shippingMethodRepository;
+        this.appUserRepository = appUserRepository;
     }
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> create(@RequestBody @Valid OrderRequestDTO orderRequestDTO) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        AppUser appUser = appUserRepository.findByEmail(auth.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated"));
+
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(orderRequestDTO));
+            return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(orderRequestDTO, appUser.getId()));
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order could not be created");
         }
@@ -95,8 +108,8 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/calculate-total")
-    public OrderResponseDTO calculateOrderTotal(@RequestBody List<PositionRequestDTO> positions) {
+    @PostMapping("/calculate")
+    public OrderResponseDTO calculate(@RequestBody List<PositionRequestDTO> positions) {
         return orderService.calculateShipmentsFromPositions(positions);
     }
 

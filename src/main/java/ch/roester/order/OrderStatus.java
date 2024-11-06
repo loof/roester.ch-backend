@@ -10,7 +10,8 @@ public enum OrderStatus {
     PARTIALLY_SHIPPED("Partially shipped"),
     CANCELLED("Cancelled"),
     DELIVERED("Delivered"),
-    RETURNED("Returned");
+    RETURNED("Returned"),
+    PREPARING_SHIPMENT("Preparing Shipment");
 
     private final String displayName;
 

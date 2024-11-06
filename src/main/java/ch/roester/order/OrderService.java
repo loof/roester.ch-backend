@@ -1,5 +1,6 @@
 package ch.roester.order;
 
+import ch.roester.app_user.AppUser;
 import ch.roester.exception.FailedValidationException;
 import ch.roester.shipment.Shipment;
 import ch.roester.shipment.ShipmentMapper;
@@ -61,9 +62,14 @@ public class OrderService {
         return orderMapper.toResponseDTO(orderRepository.save(existingOrder.get()));
     }
 
-    public OrderResponseDTO save(OrderRequestDTO orderDto) {
+
+    public OrderResponseDTO save(OrderRequestDTO orderDto, Integer appUserId) {
         // Map OrderRequestDTO to Order entity
         Order order = orderMapper.fromRequestDTO(orderDto);
+        AppUser appUser = new AppUser();
+        appUser.setId(appUserId);
+        order.setAppUser(appUser);
+
 
         // Set the order reference and manage variants in each position
         if (order.getPositions() != null) {
@@ -120,6 +126,14 @@ public class OrderService {
         return orderResponseDTO;
     }
 
+    private void addShipment(List<Shipment> shipments, List<ShippingMethod> shippingMethods, BigDecimal weight) {
+        ShippingMethod method = findCheapestShippingMethod(shippingMethods, weight);
+        Shipment shipment = new Shipment();
+        shipment.setShippingMethod(method);
+        shipment.setShipmentCost(method.getPrice());
+        shipments.add(shipment);
+    }
+
     private List<Shipment> calculateShipments(List<Variant> variants, List<ShippingMethod> shippingMethods) {
         List<Shipment> shipments = new ArrayList<>();
         BigDecimal currentWeight = BigDecimal.ZERO;
@@ -131,18 +145,10 @@ public class OrderService {
         for (Variant variant : variants) {
             BigDecimal variantWeight = variant.getWeightInGrams();
             if (variant.isSeparateShipment()) {
-                ShippingMethod method = findCheapestShippingMethod(shippingMethods, variantWeight);
-                Shipment shipment = new Shipment();
-                shipment.setShippingMethod(method);
-                shipment.setShipmentCost(method.getPrice());
-                shipments.add(shipment);
+                addShipment(shipments, shippingMethods, variantWeight);
             } else {
                 if (currentWeight.add(variantWeight).compareTo(maxWeightLimit) > 0) {
-                    ShippingMethod method = findCheapestShippingMethod(shippingMethods, currentWeight);
-                    Shipment shipment = new Shipment();
-                    shipment.setShippingMethod(method);
-                    shipment.setShipmentCost(method.getPrice());
-                    shipments.add(shipment);
+                    addShipment(shipments, shippingMethods, currentWeight);
                     currentWeight = BigDecimal.ZERO;
                 }
                 currentWeight = currentWeight.add(variantWeight);
@@ -150,11 +156,7 @@ public class OrderService {
         }
 
         if (currentWeight.compareTo(BigDecimal.ZERO) > 0) {
-            ShippingMethod method = findCheapestShippingMethod(shippingMethods, currentWeight);
-            Shipment shipment = new Shipment();
-            shipment.setShippingMethod(method);
-            shipment.setShipmentCost(method.getPrice());
-            shipments.add(shipment);
+            addShipment(shipments, shippingMethods, currentWeight);
         }
 
         return shipments;
