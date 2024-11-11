@@ -11,7 +11,6 @@ import java.time.LocalDate;
 public class ShipmentRequestDTO {
     private Integer orderId;           // Reference to Order ID
     private Integer shippingMethodId;  // Reference to ShippingMethod ID
-    private Integer carrierId;         // Reference to Carrier ID
     private BigDecimal shipmentCost;   // Shipment cost
     private LocalDate shipmentDate;    // Shipment date
     private LocalDate deliveryDate;    // Delivery date

@@ -13,6 +13,8 @@ public interface EntityMapper<REQ, RES, E> {
 
     Set<E> fromRequestDTO(Set<REQ> dtoList);
 
+    List<E> fromRequestDTO(List<REQ> dtoList);
+
     Set<RES> toResponseDTO(Set<E> entityList);
 
     List<RES> toResponseDTO(List<E> entityList);

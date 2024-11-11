@@ -1,11 +1,15 @@
 package ch.roester.carrier;
 
 import ch.roester.base_entity.BaseEntity;
+import ch.roester.event.Event;
+import ch.roester.shipping_method.ShippingMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "Carrier")
@@ -30,4 +34,7 @@ public class Carrier extends BaseEntity {
 
     @Column(name = "website", length = 255)
     private String website;
+
+    @OneToMany(mappedBy = "carrier")
+    private List<ShippingMethod> shippingMethods;
 }

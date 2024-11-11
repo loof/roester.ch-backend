@@ -26,7 +26,7 @@ public class Position {
     @Min(0)
     private Integer amount;
 
-    @OneToOne(cascade =  CascadeType.ALL)
+    @ManyToOne(cascade =  CascadeType.ALL)
     @JoinColumn(name = "variant_id", referencedColumnName = "id", nullable = false)
     private Variant variant;
 

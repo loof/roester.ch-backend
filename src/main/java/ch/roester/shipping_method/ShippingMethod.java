@@ -1,6 +1,7 @@
 package ch.roester.shipping_method;
 
 import ch.roester.base_entity.BaseEntity;
+import ch.roester.carrier.Carrier;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,10 @@ public class ShippingMethod extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "carrier_id", nullable = false)
+    private Carrier carrier;
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;

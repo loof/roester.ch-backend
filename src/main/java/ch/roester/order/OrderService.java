@@ -1,9 +1,10 @@
 package ch.roester.order;
 
 import ch.roester.app_user.AppUser;
+import ch.roester.carrier.Carrier;
+import ch.roester.carrier.CarrierRepository;
 import ch.roester.exception.FailedValidationException;
-import ch.roester.shipment.Shipment;
-import ch.roester.shipment.ShipmentMapper;
+import ch.roester.shipment.*;
 import ch.roester.shipping_method.ShippingMethod;
 import ch.roester.shipping_method.ShippingMethodRepository;
 import ch.roester.variant.Variant;
@@ -12,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -29,20 +31,22 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final VariantRepository variantRepository;
-    private final PositionRepository positionRepository;
     private final StatusRepository statusRepository;
     private final ShippingMethodRepository shippingMethodRepository;
-    private final ShipmentMapper shippmentMapper;
+    private final ShipmentRepository shipmentRepository;
+    private final ShipmentMapper shipmentMapper;
+    private final CarrierRepository carrierRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper, VariantRepository variantRepository, PositionRepository positionRepository, StatusRepository statusRepository, ShippingMethodRepository shippingMethodRepository, ShipmentMapper shippmentMapper) {
+    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper, VariantRepository variantRepository, StatusRepository statusRepository, ShippingMethodRepository shippingMethodRepository, ShipmentRepository shipmentRepository, ShipmentMapper shipmentMapper, CarrierRepository carrierRepository) {
         this.orderMapper = orderMapper;
         this.orderRepository = orderRepository;
         this.variantRepository = variantRepository;
-        this.positionRepository = positionRepository;
         this.statusRepository = statusRepository;
         this.shippingMethodRepository = shippingMethodRepository;
-        this.shippmentMapper = shippmentMapper;
+        this.shipmentRepository = shipmentRepository;
+        this.shipmentMapper = shipmentMapper;
+        this.carrierRepository = carrierRepository;
     }
 
     public Page<OrderResponseDTO> findAll(Pageable pageable) {
@@ -70,18 +74,7 @@ public class OrderService {
         appUser.setId(appUserId);
         order.setAppUser(appUser);
 
-
-        // Set the order reference and manage variants in each position
-        if (order.getPositions() != null) {
-            for (Position position : order.getPositions()) {
-                // Fetch the variant by ID to ensure it's managed
-                Variant variant = variantRepository.findById(position.getVariant().getId())
-                        .orElseThrow(() -> new EntityNotFoundException("Variant not found"));
-
-                position.setVariant(variant); // Set the managed variant
-                position.setOrder(order); // Set the order reference in the position
-            }
-        }
+        processOrderPositions(order);
 
         Optional<Status> existingStatus = statusRepository.getFirstByName(order.getStatus().getName());
         if (existingStatus.isPresent()) {
@@ -92,12 +85,24 @@ public class OrderService {
 
         // Persist the order and its associated positions
         Order savedOrder = orderRepository.save(order); // This will cascade to positions if configured
-
-        return orderMapper.toResponseDTO(savedOrder);
+        OrderResponseDTO calculatedShipments = calculateShipmentsFromPositions(orderDto.getPositions(), orderDto.getCarrierId());
+        List<ShipmentResponseDTO> calculatedShipmentDTOs = calculatedShipments.getShipments();
+        List<Shipment> shipmentsToSave = shipmentMapper.convertShipmentDTOsToEntities(calculatedShipmentDTOs, savedOrder.getId());
+        List<Shipment> savedShipments = shipmentRepository.saveAll(shipmentsToSave);
+        savedOrder.setShipments(savedShipments);
+        OrderResponseDTO response = orderMapper.toResponseDTO(savedOrder);
+        response.setOrderTotal(calculatedShipments.getOrderTotal());
+        response.setTotalShippingCost(calculatedShipments.getTotalShippingCost());
+        response.setTotalCost(calculatedShipments.getTotalCost());
+        response.setIsPickup(orderDto.getIsPickup());
+        response.setCarrierId(orderDto.getCarrierId());
+        return response;
     }
 
-    public OrderResponseDTO calculateShipmentsFromPositions(List<PositionRequestDTO> positions) {
-        List<ShippingMethod> shippingMethods = shippingMethodRepository.findAll();
+
+    public OrderResponseDTO calculateShipmentsFromPositions(List<PositionRequestDTO> positions, Integer carrierId) {
+        Carrier carrier = carrierRepository.findById(carrierId).orElseThrow(() -> new EntityNotFoundException("Carrier not found"));
+        List<ShippingMethod> shippingMethods = carrier.getShippingMethods();
         List<Variant> variants = new ArrayList<>();
         BigDecimal totalVariantCost = BigDecimal.ZERO;
 
@@ -114,7 +119,7 @@ public class OrderService {
 
         OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
         orderResponseDTO.setPositions(positions);
-        orderResponseDTO.setShipments(shippmentMapper.toResponseDTO(returnedShipments));
+        orderResponseDTO.setShipments(shipmentMapper.toResponseDTO(returnedShipments));
         BigDecimal totalShippingCost = returnedShipments.stream()
                 .map(Shipment::getShipmentCost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -124,6 +129,21 @@ public class OrderService {
         orderResponseDTO.setTotalCost(totalVariantCost.add(totalShippingCost));
 
         return orderResponseDTO;
+    }
+
+    /**
+     * Set the order reference and manage variants in each position
+     * @param order Order to get positions from
+     */
+    private void processOrderPositions(Order order) {
+        if (order.getPositions() != null) {
+            for (Position position : order.getPositions()) {
+                Variant variant = variantRepository.findById(position.getVariant().getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Variant not found"));
+                position.setVariant(variant);
+                position.setOrder(order);
+            }
+        }
     }
 
     private void addShipment(List<Shipment> shipments, List<ShippingMethod> shippingMethods, BigDecimal weight) {

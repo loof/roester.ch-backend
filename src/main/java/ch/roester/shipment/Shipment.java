@@ -29,10 +29,6 @@ public class Shipment extends BaseEntity {
     @JoinColumn(name = "shipping_method_id", nullable = false)
     private ShippingMethod shippingMethod;  // Reference to ShippingMethod entity
 
-    @ManyToOne
-    @JoinColumn(name = "carrier_id", nullable = false)
-    private Carrier carrier;  // Reference to Carrier entity
-
     @Column(name = "shipment_cost", precision = 10, scale = 2)
     private BigDecimal shipmentCost;
 

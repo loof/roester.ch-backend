@@ -109,8 +109,8 @@ public class OrderController {
     }
 
     @PostMapping("/calculate")
-    public OrderResponseDTO calculate(@RequestBody List<PositionRequestDTO> positions) {
-        return orderService.calculateShipmentsFromPositions(positions);
+    public OrderResponseDTO calculate(@RequestBody List<PositionRequestDTO> positions, Integer carrierId) {
+        return orderService.calculateShipmentsFromPositions(positions, carrierId);
     }
 
 }
