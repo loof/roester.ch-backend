@@ -30,6 +30,11 @@ public interface ShipmentMapper extends EntityMapper<ShipmentRequestDTO, Shipmen
             Shipment shipment = new Shipment();
             shipment.setShipmentCost(shipmentDTO.getShipmentCost());
             ShippingMethod shippingMethod = new ShippingMethod();
+            shippingMethod.setName(shipmentDTO.getShippingMethod().getName());
+            shippingMethod.setWeightInGramsLimit(shipmentDTO.getShippingMethod().getWeightInGramsLimit());
+            shippingMethod.setDescription(shipmentDTO.getShippingMethod().getDescription());
+            shippingMethod.setPrice(shipmentDTO.getShippingMethod().getPrice());
+            shippingMethod.setEstimatedDeliveryTime(shipmentDTO.getShippingMethod().getEstimatedDeliveryTime());
             Carrier carrier = new Carrier();
             carrier.setName(shipmentDTO.getShippingMethod().getCarrier().getName());
             carrier.setWebsite(shipmentDTO.getShippingMethod().getCarrier().getWebsite());

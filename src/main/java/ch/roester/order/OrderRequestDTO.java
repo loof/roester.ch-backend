@@ -13,9 +13,6 @@ public class OrderRequestDTO {
     @NotNull
     private List<PositionRequestDTO> positions;
 
-    @NotNull
-    private Boolean isPickup;
-
     private Integer carrierId;
 
 }

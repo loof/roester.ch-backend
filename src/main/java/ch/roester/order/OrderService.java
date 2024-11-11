@@ -90,7 +90,6 @@ public class OrderService {
         response.setOrderTotal(calculatedShipments.getOrderTotal());
         response.setTotalShippingCost(calculatedShipments.getTotalShippingCost());
         response.setTotalCost(calculatedShipments.getTotalCost());
-        response.setIsPickup(orderRequestDto.getIsPickup());
         response.setCarrierId(orderRequestDto.getCarrierId());
         response.setNumberOfParcels(calculatedShipments.getNumberOfParcels());
         return response;
