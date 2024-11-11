@@ -3,7 +3,6 @@ package ch.roester.order;
 import ch.roester.app_user.AppUser;
 import ch.roester.carrier.Carrier;
 import ch.roester.carrier.CarrierRepository;
-import ch.roester.exception.FailedValidationException;
 import ch.roester.shipment.*;
 import ch.roester.shipping_method.ShippingMethod;
 import ch.roester.shipping_method.ShippingMethodRepository;
@@ -13,13 +12,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -67,9 +63,9 @@ public class OrderService {
     }
 
 
-    public OrderResponseDTO save(OrderRequestDTO orderDto, Integer appUserId) {
+    public OrderResponseDTO save(OrderRequestDTO orderRequestDto, Integer appUserId) {
         // Map OrderRequestDTO to Order entity
-        Order order = orderMapper.fromRequestDTO(orderDto);
+        Order order = orderMapper.fromRequestDTO(orderRequestDto);
         AppUser appUser = new AppUser();
         appUser.setId(appUserId);
         order.setAppUser(appUser);
@@ -85,7 +81,7 @@ public class OrderService {
 
         // Persist the order and its associated positions
         Order savedOrder = orderRepository.save(order); // This will cascade to positions if configured
-        OrderResponseDTO calculatedShipments = calculateShipmentsFromPositions(orderDto.getPositions(), orderDto.getCarrierId());
+        OrderResponseDTO calculatedShipments = calculateOrder(orderRequestDto);
         List<ShipmentResponseDTO> calculatedShipmentDTOs = calculatedShipments.getShipments();
         List<Shipment> shipmentsToSave = shipmentMapper.convertShipmentDTOsToEntities(calculatedShipmentDTOs, savedOrder.getId());
         List<Shipment> savedShipments = shipmentRepository.saveAll(shipmentsToSave);
@@ -94,20 +90,20 @@ public class OrderService {
         response.setOrderTotal(calculatedShipments.getOrderTotal());
         response.setTotalShippingCost(calculatedShipments.getTotalShippingCost());
         response.setTotalCost(calculatedShipments.getTotalCost());
-        response.setIsPickup(orderDto.getIsPickup());
-        response.setCarrierId(orderDto.getCarrierId());
+        response.setIsPickup(orderRequestDto.getIsPickup());
+        response.setCarrierId(orderRequestDto.getCarrierId());
         response.setNumberOfParcels(calculatedShipments.getNumberOfParcels());
         return response;
     }
 
 
-    public OrderResponseDTO calculateShipmentsFromPositions(List<PositionRequestDTO> positions, Integer carrierId) {
-        Carrier carrier = carrierRepository.findById(carrierId).orElseThrow(() -> new EntityNotFoundException("Carrier not found"));
+    public OrderResponseDTO calculateOrder(OrderRequestDTO orderRequestDTO) {
+        Carrier carrier = carrierRepository.findById(orderRequestDTO.getCarrierId()).orElseThrow(() -> new EntityNotFoundException("Carrier not found"));
         List<ShippingMethod> shippingMethods = carrier.getShippingMethods();
         List<Variant> variants = new ArrayList<>();
         BigDecimal totalVariantCost = BigDecimal.ZERO;
 
-        for (PositionRequestDTO position : positions) {
+        for (PositionRequestDTO position : orderRequestDTO.getPositions()) {
             Variant variant = variantRepository.findById(position.getVariantId())
                     .orElseThrow(() -> new EntityNotFoundException("Variant not found"));
             for (int i = 0; i < position.getAmount(); i++) {
@@ -116,10 +112,10 @@ public class OrderService {
             }
         }
 
-        List<Shipment> returnedShipments = calculateShipments(variants, shippingMethods);
+        List<Shipment> returnedShipments = calculateOrder(variants, shippingMethods);
 
         OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
-        orderResponseDTO.setPositions(positions);
+        orderResponseDTO.setPositions(orderResponseDTO.getPositions());
         orderResponseDTO.setShipments(shipmentMapper.toResponseDTO(returnedShipments));
         BigDecimal totalShippingCost = returnedShipments.stream()
                 .map(Shipment::getShipmentCost)
@@ -155,7 +151,7 @@ public class OrderService {
         shipments.add(shipment);
     }
 
-    private List<Shipment> calculateShipments(List<Variant> variants, List<ShippingMethod> shippingMethods) {
+    private List<Shipment> calculateOrder(List<Variant> variants, List<ShippingMethod> shippingMethods) {
         List<Shipment> shipments = new ArrayList<>();
         BigDecimal currentWeight = BigDecimal.ZERO;
         BigDecimal maxWeightLimit = shippingMethods.stream()

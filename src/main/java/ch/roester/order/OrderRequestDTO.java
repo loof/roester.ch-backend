@@ -17,4 +17,5 @@ public class OrderRequestDTO {
     private Boolean isPickup;
 
     private Integer carrierId;
+
 }

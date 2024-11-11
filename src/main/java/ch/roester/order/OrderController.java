@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -109,8 +108,8 @@ public class OrderController {
     }
 
     @PostMapping("/calculate")
-    public OrderResponseDTO calculate(@RequestBody List<PositionRequestDTO> positions, Integer carrierId) {
-        return orderService.calculateShipmentsFromPositions(positions, carrierId);
+    public OrderResponseDTO calculate(@RequestBody OrderRequestDTO orderRequestDTO) {
+        return orderService.calculateOrder(orderRequestDTO);
     }
 
 }
